@@ -1,0 +1,30 @@
+# Dossiers spécifiques à l'environnement de développement
+bin/
+obj/
+wwwroot/bootstrap/
+wwwroot/jquery/
+# Fichiers spécifiques à l'environnement de développement Visual Studio
+.vs/
+appsettings.Development.json
+appsettings.json
+.appsettings.json
+# Fichiers de configuration spécifiques à l'utilisateur
+*.suo
+*.user
+
+# Fichiers de sauvegarde de l'éditeur
+*.bak
+
+# Dossiers spécifiques aux outils de build et aux fichiers temporaires
+_Tools/
+_Temp/
+
+# Dossiers spécifiques aux environnements de test
+test-results/
+
+# Dossiers spécifiques aux plateformes
+.DS_Store
+Thumbs.db
+
+# Fichiers de configuration qui peuvent contenir des informations sensibles
+appsettings.Development.json
