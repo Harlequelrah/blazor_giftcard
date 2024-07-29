@@ -1,0 +1,85 @@
+@page "/profil"
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.JSInterop
+@using Microsoft.AspNetCore.Authorization
+@using blazor_giftcard.Services
+@inject IJSRuntime JSRuntime
+@rendermode InteractiveServer
+@inject CustomAuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+
+
+<h3>Profil</h3>
+<div>
+    <p>Utilisateur : @userName</p>
+    <p>ID : @userId</p>
+</div>
+
+<div>
+    <h4>Claims</h4>
+    <ul>
+        @foreach (var claim in claims)
+        {
+            <li>@claim.Type: @claim.Value</li>
+        }
+    </ul>
+</div>
+
+<button class="btn btn-danger" @onclick="Logout">Déconnexion</button>
+<a href="/manage/TodoItem">Todo</a>
+
+@code {
+    private string userName = "Chargement...";
+    private string userId = "Chargement...";
+    private string errorMessage;
+    private IEnumerable<Claim> claims = new List<Claim>();
+
+
+    private async Task Logout()
+    {
+        try
+        {
+            await AuthenticationStateProvider.Logout();
+            NavigationManager.NavigateTo("/login");
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Erreur lors de la déconnexion : {ex.Message}";
+            Console.WriteLine($"Exception lors de la déconnexion : {ex}");
+        }
+    }
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            AuthenticationStateProvider.NotifyPostPrerender();
+            try
+            {
+                var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+                var user = authState.User;
+
+
+                if (user.Identity.IsAuthenticated)
+                {
+                    userName = user.FindFirst("unique_name")?.Value ?? "Utilisateur inconnu";
+                    userId = user.FindFirst("nameid")?.Value ?? "ID non trouvé";
+                    claims = user.Claims;
+                }
+                else
+                {
+                    NavigationManager.NavigateTo("/login", true);
+                }
+
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                errorMessage = $"Erreur lors de l'initialisation du profil : {ex.Message}";
+                Console.WriteLine($"Exception lors de l'initialisation du profil : {ex}");
+            }
+        }
+}
+}

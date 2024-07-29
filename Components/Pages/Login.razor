@@ -1,0 +1,61 @@
+@page "/login"
+@using blazor_giftcard.Services
+@using Microsoft.AspNetCore.Components.Forms
+@inject CustomAuthenticationStateProvider AuthStateProvider
+@inject NavigationManager Navigation
+
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger">
+        @errorMessage
+    </div>
+}
+
+<EditForm Model="user" OnValidSubmit="HandleLogin" FormName="loginForm">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div>
+        <label>Username:</label>
+        <InputText @bind-Value="user.Username" />
+    </div>
+    <div>
+        <label>Password:</label>
+        <InputText @bind-Value="user.Password" type="password" />
+    </div>
+    <button type="submit">Login</button>
+</EditForm>
+
+@code {
+    [SupplyParameterFromForm]
+    private User user { get; set; } = new User();
+    private string errorMessage;
+
+    private async Task HandleLogin()
+    {
+        errorMessage = null; // Clear previous error message
+
+        try
+        {
+            await AuthStateProvider.Login(user.Username, user.Password);
+            Navigation.NavigateTo("/profil");
+        }
+        catch (HttpRequestException ex)
+        {
+            errorMessage = "Nom d'utilisateur ou mot de passe incorrect.";
+            Console.WriteLine($"Login error: {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            errorMessage = "Une erreur inconnue s'est produite.";
+            Console.WriteLine($"Unexpected error: {ex.Message}");
+        }
+    }
+
+    public class User
+    {
+        public string Username { get; set; }
+        public string Password { get; set; }
+    }
+}
