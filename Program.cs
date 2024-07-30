@@ -31,6 +31,8 @@ builder.Services.AddHttpContextAccessor();
 
 
 builder.Services.AddCascadingAuthenticationState();
+builder.Services.AddScoped<CustomAuthenticationStateProvider>();
+builder.Services.AddScoped<AuthenticationStateProvider>(provider => provider.GetRequiredService<CustomAuthenticationStateProvider>());
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -48,19 +50,40 @@ builder.Services.AddAuthentication(options =>
         ValidAudience = builder.Configuration["Jwt:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
     };
+    options.Events = new JwtBearerEvents
+    {
+        OnChallenge = context =>
+        {
+            if (context.AuthenticateFailure != null)
+            {
+                var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+                logger.LogError("Authentication failed: {Message}", context.AuthenticateFailure.Message);
+                // Redirect to your login page or an appropriate URL
+                context.Response.Redirect("/login");
+                context.HandleResponse();
+            }
+            return Task.CompletedTask;
+        },
+        OnAuthenticationFailed = context =>
+        {
+            var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+            logger.LogError("Authentication failed: {Message}", context.Exception.Message);
+            return Task.CompletedTask;
+        }
+    };
 
 });
 
 builder.Services.AddAuthorizationCore();
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("ADMIN", policy => policy.RequireClaim("role", "ADMIN"));
+    options.AddPolicy("ADMIN", policy => policy.RequireRole("ADMIN"));
     options.AddPolicy("SUBSCRIBER", policy => policy.RequireClaim("role", "SUBSCRIBER"));
 });
 
 builder.Services.AddScoped<SubscriberService>();
-builder.Services.AddScoped<CustomAuthenticationStateProvider>();
-builder.Services.AddScoped<AuthenticationStateProvider>(provider => provider.GetRequiredService<CustomAuthenticationStateProvider>());
+
+
 builder.Services.AddLogging(logging =>
         {
             logging.AddConsole();

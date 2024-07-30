@@ -5,30 +5,74 @@
         <NavMenu />
     </div>
 
-    <main class="d-flex flex-column">
+    <div class="content-wrapper d-flex flex-column">
         <div class="bg-white top-row px-4 d-flex justify-content-between align-items-center">
-            <img  src="minilogonoir.png" height="50%" style="max-height: 50px;" />
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank" class="ms-3">About</a>
+            <img src="minilogonoir.png" height="50%" style="max-height: 50px;" />
+            <a href="/" class="ms-3">Accueil</a>
+            <a href="/login" class="ms-3">Se Connecter</a>
+            <a href="#" target="_blank" class="ms-3">A propos</a>
         </div>
 
-        <article class="content px-4 flex-grow-1">
+        <main class="content px-4 flex-grow-1">
             @Body
-        </article>
-
-        <footer class="footer   text-white py-3 mt-auto">
-            <div class="container d-flex justify-content-between align-items-center">
-                <div class="d-flex align-items-center">
-                    <img src="logoblanc.png" height="50%" style="max-height: 50px;" />
-                    <span class="ms-3">© 2024 Your Company</span>
-                </div>
-                <div>
-                    <a href="https://yourlink.com" class="text-white me-3">Link 1</a>
-                    <a href="https://yourlink.com" class="text-white">Link 2</a>
-                </div>
-            </div>
-        </footer>
-    </main>
+        </main>
+    </div>
 </div>
+
+<footer class="footer text-white py-3 mt-auto">
+    <div class="container">
+        <div class="row justify-content-between">
+            <!-- Column with Image and Text -->
+            <div class="col-md-3 d-flex flex-column align-items-center text-center">
+                <img src="logoblanc.png" height="50%" style="max-height: 50px;" />
+                <span class="mt-2">Commandez, le reste on gère chap chap 🤌</span>
+            </div>
+            <!-- Column with Quick Links -->
+            <div class="col-md-3 text-center">
+                <h5>Liens Rapides</h5>
+                <ul class="list-unstyled">
+                    <li><a href="yourlink.com" class="text-white">Accueil</a></li>
+                    <li><a href="yourlink.com" class="text-white">Contact</a></li>
+                    <li><a href="yourlink.com" class="text-white">Conditions d'utilisation</a></li>
+                    <li><a href="yourlink.com" class="text-white">Politique de confidentialité</a></li>
+                </ul>
+            </div>
+            <!-- Column with Localisation Info -->
+            <div class="col-md-3 text-center">
+                <h5>Localisation</h5>
+                <ul class="list-unstyled">
+                    <li>
+                        <i class="fas fa-map-marker-alt"></i>
+                        GOCHAP SOLUTIONS SARLU
+                    </li>
+                    <li>
+                        <i class="fas fa-map-marker-alt"></i>
+                        Lomé, Adidogomé, Carrefour Franciscain, non loin de la station MRS et du supermarché Champion
+                    </li>
+                </ul>
+            </div>
+            <!-- Column with Contact Info -->
+            <div class="col-md-3 text-center">
+                <h5>Contact</h5>
+                <ul class="list-unstyled">
+                    <li>
+                        <i class="fas fa-phone"></i>
+                        (+ 228) 79 90 74 74 / 70 16 38 38
+                    </li>
+                    <li>
+                        <i class="fas fa-envelope"></i>
+                        <a href="mailto:info@gochap.solutions" class="text-white">info@gochap.solutions</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-12 text-center">
+                <span>2024 © All Rights Reserved - GOCHAP SOLUTIONS SARLU</span>
+            </div>
+        </div>
+    </div>
+</footer>
 
 <div id="blazor-error-ui">
     An unhandled error has occurred.

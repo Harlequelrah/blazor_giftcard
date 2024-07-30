@@ -3,7 +3,11 @@
 @using Microsoft.AspNetCore.Components.Forms
 @inject CustomAuthenticationStateProvider AuthStateProvider
 @inject NavigationManager Navigation
+<head>
 
+<link rel="stylesheet" href="Layout.css" />
+</head>
+<PageTitle>Login</PageTitle>
 
 @if (!string.IsNullOrEmpty(errorMessage))
 {
@@ -11,22 +15,27 @@
         @errorMessage
     </div>
 }
-
+<div class="loginbox container ">
 <EditForm Model="user" OnValidSubmit="HandleLogin" FormName="loginForm">
     <DataAnnotationsValidator />
     <ValidationSummary />
-
     <div>
-        <label>Username:</label>
-        <InputText @bind-Value="user.Username" />
+        <InputText @bind-Value="user.Email" placeholder="Email"  />
     </div>
     <div>
-        <label>Password:</label>
-        <InputText @bind-Value="user.Password" type="password" />
+        <InputText @bind-Value="user.Password" type="password" placeholder="Password" />
     </div>
     <button type="submit">Login</button>
 </EditForm>
+  <div class="drop drop-1"></div>
+  <div class="drop drop-2"></div>
+  <div class="drop drop-3">
+<p>Remplissez le formulaire ci-contre pour acceder à la plateforme</p>
+  </div>
+  <div class="drop drop-4"></div>
+  <div class="drop drop-5"></div>
 
+</div>
 @code {
     [SupplyParameterFromForm]
     private User user { get; set; } = new User();
@@ -38,7 +47,7 @@
 
         try
         {
-            await AuthStateProvider.Login(user.Username, user.Password);
+            await AuthStateProvider.Login(user.Email, user.Password);
             Navigation.NavigateTo("/profil");
         }
         catch (HttpRequestException ex)
@@ -55,7 +64,7 @@
 
     public class User
     {
-        public string Username { get; set; }
+        public string Email { get; set; }
         public string Password { get; set; }
     }
 }

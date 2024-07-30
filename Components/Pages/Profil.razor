@@ -4,7 +4,7 @@
 @using Microsoft.JSInterop
 @using Microsoft.AspNetCore.Authorization
 @using blazor_giftcard.Services
-@inject IJSRuntime JSRuntime
+@inject IJSRuntime JS
 @rendermode InteractiveServer
 @inject CustomAuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
@@ -14,6 +14,7 @@
 <div>
     <p>Utilisateur : @userName</p>
     <p>ID : @userId</p>
+    <p>Role : @role</p>
 </div>
 
 <div>
@@ -25,15 +26,34 @@
         }
     </ul>
 </div>
-
+<p id="test">Initial text</p>
 <button class="btn btn-danger" @onclick="Logout">Déconnexion</button>
-<a href="/manage/TodoItem">Todo</a>
+<button class="btn btn-danger" @onclick="CallJsFunction" >Test</button>
+
+
+
 
 @code {
     private string userName = "Chargement...";
     private string userId = "Chargement...";
+    private string role = "Chargement...";
     private string errorMessage;
     private IEnumerable<Claim> claims = new List<Claim>();
+    private async Task CallJsFunction()
+    {
+        await JS.InvokeVoidAsync("showAlert", "Hello from Blazor!");
+    }
+    private async Task ChangeVisibility(string role)
+    {
+        try
+        {
+            await JS.InvokeVoidAsync("manageVisibility", role);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error calling JavaScript function: {ex.Message}");
+        }
+    }
 
 
     private async Task Logout()
@@ -66,7 +86,9 @@
                 {
                     userName = user.FindFirst("unique_name")?.Value ?? "Utilisateur inconnu";
                     userId = user.FindFirst("nameid")?.Value ?? "ID non trouvé";
+                    role = user.FindFirst("role")?.Value ?? "Sans Role";
                     claims = user.Claims;
+                    ChangeVisibility(role);
                 }
                 else
                 {

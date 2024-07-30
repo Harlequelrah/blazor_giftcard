@@ -19,8 +19,15 @@ using System.Threading;
 
 namespace blazor_giftcard.Services
 {
+    public class ErrorResponseModel
+    {
+        public string ErrorMessage { get; set; }
+        // Ajoute d'autres propriétés si nécessaire
+    }
+
     public class CustomAuthenticationStateProvider : AuthenticationStateProvider, IAsyncDisposable
     {
+
         private readonly HttpClient _httpClient;
         private readonly IJSRuntime _jsRuntime;
         private readonly NavigationManager _navigation;
@@ -39,7 +46,8 @@ namespace blazor_giftcard.Services
             IHttpContextAccessor httpContextAccessor,
             ILogger<CustomAuthenticationStateProvider> logger,
             IConfiguration configuration,
-            IHttpClientFactory httpClientFactory)
+            IHttpClientFactory httpClientFactory
+             )
         {
             _httpClient = httpClient;
             _jsRuntime = jsRuntime;
@@ -49,6 +57,7 @@ namespace blazor_giftcard.Services
             _logger = logger;
             _configuration = configuration;
             _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
+
         }
 
 
@@ -56,6 +65,12 @@ namespace blazor_giftcard.Services
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
             _logger.LogInformation("Getting authentication state...");
+
+            if (_isPrerendering)
+            {
+                _logger.LogInformation("Prerendering in progress, returning unauthenticated state.");
+                return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
+            }
             _token = await GetTokenAsync();
             var identity = new ClaimsIdentity();
             if (!string.IsNullOrEmpty(_token))
@@ -77,28 +92,44 @@ namespace blazor_giftcard.Services
         }
 
 
-        public async Task Login(string username, string password)
+
+        public async Task Login(string email, string password)
         {
-            _logger.LogInformation("Attempting to log in user: {Username}", username);
+            _logger.LogInformation("Attempting to log in user: {Email}", email);
 
             try
             {
                 var client = _httpClientFactory.CreateClient("noauthClientAPI");
 
                 _logger.LogInformation("Sending login request...");
-                var response = await client.PostAsJsonAsync($"{_configuration["ApiBaseUrl"]}/api/User/login", new { username, password });
+                var response = await client.PostAsJsonAsync($"{_configuration["ApiBaseUrl"]}/api/User/login", new { email, password });
 
                 _logger.LogInformation("Login response received...");
                 if (!response.IsSuccessStatusCode)
                 {
-                    _logger.LogWarning("Login failed with status code: {StatusCode}", response.StatusCode);
+                    var responseContent = await response.Content.ReadAsStringAsync();
+
+                    // Journaliser le code de statut et le contenu de la réponse
+                    _logger.LogWarning("Login failed with status code: {StatusCode}. Response content: {Content}", response.StatusCode, responseContent);
+
+                    // Dé-sérialiser le contenu JSON en un objet d'erreur
+                    try
+                    {
+                        var errorDetails = JsonSerializer.Deserialize<ErrorResponseModel>(responseContent);
+                        _logger.LogWarning("Detailed error: {ErrorMessage}", errorDetails?.ErrorMessage);
+                    }
+                    catch (JsonException jsonEx)
+                    {
+                        _logger.LogError("Failed to deserialize error response: {Message}", jsonEx.Message);
+                    }
+
                     return;
                 }
 
                 var result = await response.Content.ReadFromJsonAsync<AuthResponse>();
                 if (string.IsNullOrEmpty(result.Token))
                 {
-                    _logger.LogWarning("No token received for user: {Username}", username);
+                    _logger.LogWarning("No token received for user: {Email}", email);
                     return;
                 }
                 _token = result.Token;
@@ -118,72 +149,25 @@ namespace blazor_giftcard.Services
 
                 var current_user = new ClaimsPrincipal(identity);
                 _logger.LogInformation($"User authenticated: {current_user.Identity.IsAuthenticated}");
-
-
-                var authProperties = new AuthenticationProperties
-                {
-                    ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(60),
-                    IsPersistent = true
-                };
-
-                _logger.LogInformation("Signing in the user...");
-                if (_httpContextAccessor.HttpContext.Response.HasStarted)
-                {
-                    _logger.LogWarning("Response has already started. Deferring sign-in to OnAfterRenderAsync.");
-                    _afterRenderActions.Enqueue(async () =>
-                    {
-
-                        // await _httpContextAccessor.HttpContext.SignInAsync("Cookies", current_user, authProperties);
-                        await _httpContextAccessor.HttpContext.SignInAsync("jwt", current_user, authProperties);
-                        _logger.LogInformation("User signed in.");
-
-                        NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
-                    });
-                }
-                else
-                {
-                    await _httpContextAccessor.HttpContext.SignInAsync("jwt", current_user, authProperties);
-                    // await _httpContextAccessor.HttpContext.SignInAsync("Cookies", current_user, authProperties);
-                    _logger.LogInformation("User signed in.");
-                    NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
-                }
-
-                _logger.LogInformation("User logged in successfully.");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Login failed for user: {Username}", username);
+                _logger.LogError(ex, "Login failed for user: {Email}", email);
             }
+            NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
+            _logger.LogInformation("User logged in successfully.");
         }
 
         public async Task Logout()
         {
-            _token = null;
-            await SecureToken();
             try
             {
                 _logger.LogInformation("Logging out user...");
-                if (_httpContextAccessor.HttpContext.Response.HasStarted)
-                {
-                    _logger.LogWarning("Response has already started. Deferring sign-out to OnAfterRenderAsync.");
-                    _afterRenderActions.Enqueue(async () =>
-                    {
-                        await _httpContextAccessor.HttpContext.SignOutAsync("Cookies");
-                        NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
-                        _logger.LogInformation("User logged out successfully.");
-                    });
-                }
-                else
-                {
-                    _token = null;
-                    await SecureToken();
-                    await _httpContextAccessor.HttpContext.SignOutAsync("Cookies");
-                    NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
-                    _logger.LogInformation("User logged out successfully.");
-                }
-
-                _logger.LogInformation("User logged out  in successfully.");
+                _token = null;
+                await SecureToken();
+                _logger.LogInformation("User logged out successfully.");
             }
+
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Loggin out  failed for user");
@@ -193,8 +177,14 @@ namespace blazor_giftcard.Services
 
         public async Task<string> GetTokenAsync()
         {
-            if (_isPrerendering) return null;
-            return await _jsRuntime.InvokeAsync<string>("localStorage.getItem", "authToken");
+            if (_isPrerendering)
+            {
+                _logger.LogInformation("Prerendering, skipping token retrieval.");
+                return null;
+            }
+            var token = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", "authToken");
+            _logger.LogInformation($"Token retrieved from localStorage: {token}");
+            return token;
         }
 
         private async Task SecureToken()
@@ -279,60 +269,46 @@ namespace blazor_giftcard.Services
 
             return _isPrerendering;
         }
-        public async Task<string> GetToken()
+
+
+
+
+        public class AuthResponse
         {
-            return _token;
-        }
-        public async Task<string> GetAccessToken()
-        {
-            var authState = await GetAuthenticationStateAsync();
-            var user = authState.User;
-            string token = null;
-            if (user.Identity.IsAuthenticated)
-            {
-                token = user.FindFirst("access_token")?.Value;
-            }
-            return token;
+            public string Token { get; set; }
         }
 
-    }
-
-    public class AuthResponse
-    {
-        public string Token { get; set; }
-    }
-
-    public static class JwtParser
-    {
-        public static IEnumerable<Claim> ParseClaimsFromJwt(string jwt)
+        public static class JwtParser
         {
-            var claims = new List<Claim>();
-            var payload = jwt.Split('.')[1];
-            var jsonBytes = ParseBase64WithoutPadding(payload);
-            var keyValuePairs = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonBytes);
-
-            if (keyValuePairs != null)
+            public static IEnumerable<Claim> ParseClaimsFromJwt(string jwt)
             {
-                foreach (var kvp in keyValuePairs)
+                var claims = new List<Claim>();
+                var payload = jwt.Split('.')[1];
+                var jsonBytes = ParseBase64WithoutPadding(payload);
+                var keyValuePairs = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonBytes);
+
+                if (keyValuePairs != null)
                 {
-                    claims.Add(new Claim(kvp.Key, kvp.Value.ToString()));
+                    foreach (var kvp in keyValuePairs)
+                    {
+                        claims.Add(new Claim(kvp.Key, kvp.Value.ToString()));
+                    }
                 }
+
+                return claims;
             }
 
-            return claims;
-        }
-
-        private static byte[] ParseBase64WithoutPadding(string base64)
-        {
-            switch (base64.Length % 4)
+            private static byte[] ParseBase64WithoutPadding(string base64)
             {
-                case 2: base64 += "=="; break;
-                case 3: base64 += "="; break;
+                switch (base64.Length % 4)
+                {
+                    case 2: base64 += "=="; break;
+                    case 3: base64 += "="; break;
+                }
+                return Convert.FromBase64String(base64);
             }
-            return Convert.FromBase64String(base64);
         }
+
+
     }
-
-
-
 }

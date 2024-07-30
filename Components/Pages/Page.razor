@@ -1,4 +1,3 @@
-@page "/register"
 @using blazor_giftcard.Services
 @using Microsoft.AspNetCore.Components.Forms
 @inject HttpClient Http
@@ -18,8 +17,8 @@
         </ul>
     </div>
 }
-
-<EditForm Model="user" OnValidSubmit="HandleRegistration" FormName="registerForm">
+<div class="container">
+<EditForm Model="user" OnValidSubmit="HandleRegistration" FormName="registerForm" >
     <DataAnnotationsValidator />
     <ValidationSummary />
 
@@ -45,7 +44,7 @@
     </div>
     <button type="submit">Register</button>
 </EditForm>
-
+</div>
 @code {
     [SupplyParameterFromForm]
     private User user { get; set; } = new User();
