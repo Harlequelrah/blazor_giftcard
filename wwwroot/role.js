@@ -1,17 +1,35 @@
 // wwwroot/js/scripts.js
 
-$(document).ready(function() {
+$(document).ready(function () {
     // Fonction pour gérer la visibilité en fonction de l'argument
-    window.manageVisibility = function(role) {
+    window.manageVisibility = function (role) {
         // Cache tous les éléments avec la classe 'subscriber'
         if (role === "SUBSCRIBER") {
-            $(".subscriber").css("visibility", "visible");
-            $(".admin").css("visibility", "hidden");
+            $(".subscriber").show();
+            $(".admin").hide();
         }
         // Cache tous les éléments avec la classe 'admin'
         else if (role === "ADMIN") {
-            $(".subscriber").css("visibility", "visible");
-            $(".admin").css("visibility", "visible");
+            $(".subscriber").hide()
+            $(".admin").show();
+        }
+        else {
+            $(".subscriber").hide()
+            $(".admin").hide();
+        }
+    };
+    window.updateUserState = function (isLoggedIn, username) {
+        if (isLoggedIn) {
+            $("#loginlink").hide();
+            $("#logoutlink").show();
+            $("#profil").show();
+            if (username) {
+                $("#profil").text(username);
+            }
+        } else {
+            $("#loginlink").show();
+            $("#logoutlink").hide();
+            $("#profil").hide();
         }
     };
 });

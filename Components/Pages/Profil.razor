@@ -4,10 +4,12 @@
 @using Microsoft.JSInterop
 @using Microsoft.AspNetCore.Authorization
 @using blazor_giftcard.Services
-@inject IJSRuntime JS
-@rendermode InteractiveServer
 @inject CustomAuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JS
+@rendermode InteractiveServer
+
+
 
 
 <h3>Profil</h3>
@@ -61,7 +63,9 @@
         try
         {
             await AuthenticationStateProvider.Logout();
+
             NavigationManager.NavigateTo("/login");
+
         }
         catch (Exception ex)
         {
@@ -88,7 +92,7 @@
                     userId = user.FindFirst("nameid")?.Value ?? "ID non trouvé";
                     role = user.FindFirst("role")?.Value ?? "Sans Role";
                     claims = user.Claims;
-                    ChangeVisibility(role);
+                    //ChangeVisibility(role);
                 }
                 else
                 {

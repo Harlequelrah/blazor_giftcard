@@ -1,9 +1,7 @@
-.subscriber{
-    visibility: none;
+.subscriber , .admin {
+    display:none;
 }
-.admin{
-    visibility: none;
-}
+
 
 .navbar-toggler {
     appearance: none;

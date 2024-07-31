@@ -35,6 +35,8 @@ namespace blazor_giftcard.Services
         private readonly ILogger<CustomAuthenticationStateProvider> _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private string _token;
+        private string _role;
+        private string _userName;
         private bool _tokenStored;
         private bool _isPrerendering = true;
         private ConcurrentQueue<Func<Task>> _afterRenderActions;
@@ -133,7 +135,7 @@ namespace blazor_giftcard.Services
                     return;
                 }
                 _token = result.Token;
-                await SecureToken();
+
                 var identity = new ClaimsIdentity();
                 if (!string.IsNullOrEmpty(_token))
                 {
@@ -148,7 +150,11 @@ namespace blazor_giftcard.Services
                 }
 
                 var current_user = new ClaimsPrincipal(identity);
+                _role = current_user.FindFirst("role")?.Value?? "";
+                _userName = current_user.FindFirst("unique_name")?.Value?? "";
+                await SecureToken();
                 _logger.LogInformation($"User authenticated: {current_user.Identity.IsAuthenticated}");
+
             }
             catch (Exception ex)
             {
@@ -164,8 +170,10 @@ namespace blazor_giftcard.Services
             {
                 _logger.LogInformation("Logging out user...");
                 _token = null;
+                _role=null;
                 await SecureToken();
                 _logger.LogInformation("User logged out successfully.");
+
             }
 
             catch (Exception ex)
@@ -191,14 +199,19 @@ namespace blazor_giftcard.Services
         {
             if (string.IsNullOrEmpty(_token))
             {
+                await _jsRuntime.InvokeVoidAsync("updateUserState",false,_userName);
                 await _jsRuntime.InvokeVoidAsync("localStorage.removeItem", "authToken");
                 _logger.LogInformation("Token removed from localStorage");
+
             }
             else
             {
+                await _jsRuntime.InvokeVoidAsync("updateUserState",true,_userName);
                 await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "authToken", _token);
                 _logger.LogInformation("Token stored in localStorage");
             }
+
+            await _jsRuntime.InvokeVoidAsync("manageVisibility", _role);
         }
 
         public async ValueTask DisposeAsync()

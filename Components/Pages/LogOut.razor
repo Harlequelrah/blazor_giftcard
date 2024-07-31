@@ -1,0 +1,29 @@
+
+@page  "/logout"
+@using blazor_giftcard.Services
+@inject CustomAuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+@code {
+    private string errorMessage;
+    private async Task Logout()
+    {
+        try
+        {
+            await AuthenticationStateProvider.Logout();
+
+            NavigationManager.NavigateTo("/");
+
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Erreur lors de la déconnexion : {ex.Message}";
+            Console.WriteLine($"Exception lors de la déconnexion : {ex}");
+        }
+    }
+    protected override async Task OnInitializedAsync()
+
+    {
+        await Logout();
+    }
+
+}

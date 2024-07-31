@@ -1,8 +1,20 @@
+.loginlink{
+    display:inline;
+    /* visibility: hidden; */
+}
+#logoutlink {
+    display:none;
+}
+#profil{
+    display:none;
+}
+
+
 .page {
     display: flex;
     flex-direction: row;
     min-height: 100vh;
-   
+
 
 }
 
