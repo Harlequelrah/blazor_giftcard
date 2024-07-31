@@ -10,7 +10,7 @@
 <h1>Counter</h1>
 
 <p role="status">Current count: @currentCount</p>
-
+<PostLogin url="counter" />
 <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
 
 @code {
@@ -19,24 +19,5 @@
     private void IncrementCount()
     {
         currentCount++;
-    }
-    protected override async Task OnInitializedAsync()
-    {
-      //  Console.WriteLine("waka");
-      //  await JS.InvokeVoidAsync("manageVisibility", "SUBSCRIBER");
-      //  StateHasChanged();
-    }
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-
-        {
-            //ASP.GetAuthenticationStateAsync();
-        //    Console.WriteLine("waka");
-        //await JS.InvokeVoidAsync("manageVisibility", "SUBSCRIBER");
-        //StateHasChanged();
-
-            //StateHasChanged();
-        }
     }
 }
