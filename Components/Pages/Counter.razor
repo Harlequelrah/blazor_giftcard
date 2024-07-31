@@ -1,5 +1,9 @@
 ﻿@page "/counter"
+@using blazor_giftcard.Services
+@inject CustomAuthenticationStateProvider ASP
 @rendermode InteractiveServer
+@using Microsoft.JSInterop
+@inject IJSRuntime JS
 
 <PageTitle>Counter</PageTitle>
 
@@ -15,5 +19,24 @@
     private void IncrementCount()
     {
         currentCount++;
+    }
+    protected override async Task OnInitializedAsync()
+    {
+      //  Console.WriteLine("waka");
+      //  await JS.InvokeVoidAsync("manageVisibility", "SUBSCRIBER");
+      //  StateHasChanged();
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+
+        {
+            ASP.GetAuthenticationStateAsync();
+        //    Console.WriteLine("waka");
+        //await JS.InvokeVoidAsync("manageVisibility", "SUBSCRIBER");
+        //StateHasChanged();
+
+            //StateHasChanged();
+        }
     }
 }

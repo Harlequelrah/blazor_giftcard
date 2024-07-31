@@ -35,6 +35,7 @@ namespace blazor_giftcard.Services
         private readonly ILogger<CustomAuthenticationStateProvider> _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private string _token;
+        public ClaimsPrincipal current_user { get; set; } = new ClaimsPrincipal(new ClaimsIdentity());
         private string _role;
         private string _userName;
         private bool _tokenStored;
@@ -70,9 +71,39 @@ namespace blazor_giftcard.Services
 
             if (_isPrerendering)
             {
-                _logger.LogInformation("Prerendering in progress, returning unauthenticated state.");
-                return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
+                _logger.LogInformation("Getting authentication state after prerendering...");
+
+                _afterRenderActions.Enqueue(async () =>
+                {
+                    _logger.LogInformation("Apres prerendering");
+                    if (current_user.Identity.IsAuthenticated)
+                    {
+
+                        _logger.LogInformation("Utilisateur Actuel est connecté apres prerendu");
+                        Console.WriteLine("username : " + _userName + " role : " + _role);
+                        await _jsRuntime.InvokeVoidAsync("updateUserState", true, _userName);
+                        await _jsRuntime.InvokeVoidAsync("manageVisibility", _role);
+                        // NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
+                    }
+                    else { _logger.LogInformation("Utilisateur Actuel n'est connecté"); }
+                });
             }
+            if (current_user.Identity.IsAuthenticated)
+            {
+                return new AuthenticationState(current_user);
+
+                _logger.LogInformation("Utilisateur Actuel est connecté ");
+                NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
+                if (_role != "ADMIN" && _role != "SUBSCRIBER")
+                {
+                    _logger.LogInformation("Not Authorized");
+                    current_user = new ClaimsPrincipal(new ClaimsIdentity());
+                    return new AuthenticationState(current_user);
+                }
+            }
+            else { _logger.LogInformation("Utilisateur Actuel n'est connecté"); }
+            // return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
+
             _token = await GetTokenAsync();
             var identity = new ClaimsIdentity();
             if (!string.IsNullOrEmpty(_token))
@@ -88,7 +119,7 @@ namespace blazor_giftcard.Services
             }
 
 
-            var current_user = new ClaimsPrincipal(identity);
+            current_user = new ClaimsPrincipal(identity);
             _logger.LogInformation($"User authenticated: {current_user.Identity.IsAuthenticated}");
             return new AuthenticationState(current_user);
         }
@@ -149,9 +180,10 @@ namespace blazor_giftcard.Services
                     }
                 }
 
-                var current_user = new ClaimsPrincipal(identity);
-                _role = current_user.FindFirst("role")?.Value?? "";
-                _userName = current_user.FindFirst("unique_name")?.Value?? "";
+                // var current_user = new ClaimsPrincipal(identity);
+                current_user = new ClaimsPrincipal(identity);
+                _role = current_user.FindFirst("role")?.Value ?? "";
+                _userName = current_user.FindFirst("unique_name")?.Value ?? "";
                 await SecureToken();
                 _logger.LogInformation($"User authenticated: {current_user.Identity.IsAuthenticated}");
 
@@ -160,7 +192,7 @@ namespace blazor_giftcard.Services
             {
                 _logger.LogError(ex, "Login failed for user: {Email}", email);
             }
-            NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
+            // NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
             _logger.LogInformation("User logged in successfully.");
         }
 
@@ -170,7 +202,7 @@ namespace blazor_giftcard.Services
             {
                 _logger.LogInformation("Logging out user...");
                 _token = null;
-                _role=null;
+                _role = null;
                 await SecureToken();
                 _logger.LogInformation("User logged out successfully.");
 
@@ -199,14 +231,14 @@ namespace blazor_giftcard.Services
         {
             if (string.IsNullOrEmpty(_token))
             {
-                await _jsRuntime.InvokeVoidAsync("updateUserState",false,_userName);
+                await _jsRuntime.InvokeVoidAsync("updateUserState", false, _userName);
                 await _jsRuntime.InvokeVoidAsync("localStorage.removeItem", "authToken");
                 _logger.LogInformation("Token removed from localStorage");
 
             }
             else
             {
-                await _jsRuntime.InvokeVoidAsync("updateUserState",true,_userName);
+                await _jsRuntime.InvokeVoidAsync("updateUserState", true, _userName);
                 await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "authToken", _token);
                 _logger.LogInformation("Token stored in localStorage");
             }
@@ -231,6 +263,7 @@ namespace blazor_giftcard.Services
                 _logger.LogInformation("Executing post prerender action");
                 await action();
             }
+
         }
 
         public async Task AddAfterRenderAction(Func<Task> action)

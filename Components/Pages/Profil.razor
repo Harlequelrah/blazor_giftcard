@@ -2,11 +2,11 @@
 @using System.Security.Claims
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.JSInterop
+@inject IJSRuntime JS
 @using Microsoft.AspNetCore.Authorization
 @using blazor_giftcard.Services
 @inject CustomAuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
-@inject IJSRuntime JS
 @rendermode InteractiveServer
 
 
@@ -84,6 +84,7 @@
             {
                 var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
                 var user = authState.User;
+                
 
 
                 if (user.Identity.IsAuthenticated)

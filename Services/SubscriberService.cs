@@ -21,14 +21,14 @@ namespace blazor_giftcard.Services
             _logger = logger;
         }
 
-        public async Task<BeneficiaryDto> RegisterBeneficiaryAsync(string token, int idsubscriber, BeneficiaryDto beneficiaryDto)
+        public async Task<Beneficiary> RegisterBeneficiaryAsync(string token, int idsubscriber, BeneficiaryDto beneficiaryDto)
         {
             try
             {
                 _logger.LogInformation($"Registering beneficiary for subscriber ID {idsubscriber}.");
                 var response = await _authClient.PostAsJsonAsync($"register/beneficiary/bysubscriber/{idsubscriber}", beneficiaryDto);
                 response.EnsureSuccessStatusCode();
-                var registeredBeneficiary = await response.Content.ReadFromJsonAsync<BeneficiaryDto>();
+                var registeredBeneficiary = await response.Content.ReadFromJsonAsync<Beneficiary>();
                 _logger.LogInformation($"Successfully registered beneficiary for subscriber ID {idsubscriber}.");
                 return registeredBeneficiary;
             }

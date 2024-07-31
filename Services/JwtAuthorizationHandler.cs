@@ -13,6 +13,8 @@ namespace blazor_giftcard.Services
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
+            var token = await _stateProvider.GetTokenAsync();
+            Console.WriteLine($"Adding token to request: {token}");
             return await base.SendAsync(request, cancellationToken);
         }
 
@@ -27,36 +29,6 @@ namespace blazor_giftcard.Services
             }
 
             return await client.SendAsync(request, cancellationToken);
-        }
-    }
-    public class AuthorizationDebugMiddleware
-    {
-        private readonly RequestDelegate _next;
-        private readonly ILogger<AuthorizationDebugMiddleware> _logger;
-
-        public AuthorizationDebugMiddleware(RequestDelegate next, ILogger<AuthorizationDebugMiddleware> logger)
-        {
-            _next = next;
-            _logger = logger;
-        }
-
-        public async Task InvokeAsync(HttpContext context)
-        {
-            var user = context.User;
-            if (user.Identity.IsAuthenticated)
-            {
-                _logger.LogInformation("User is authenticated");
-                foreach (var claim in user.Claims)
-                {
-                    _logger.LogInformation("Claim Type: {ClaimType}, Claim Value: {ClaimValue}", claim.Type, claim.Value);
-                }
-            }
-            else
-            {
-                _logger.LogInformation("User is not authenticated");
-            }
-
-            await _next(context);
         }
     }
 

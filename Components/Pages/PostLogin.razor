@@ -1,0 +1,66 @@
+@page "/postlogin/{url}"
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Authorization
+@using blazor_giftcard.Services
+@inject CustomAuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+@using Microsoft.JSInterop
+@inject IJSRuntime JS
+<head>
+<link rel="stylesheet" href="Layout.css" />
+</head>
+<PageTitle>Redirection Page</PageTitle>
+<div class="postlogin container">
+  <div class="drop droppostlogin">En attente de redirection </div>
+</div>
+
+@code {
+    [Parameter]
+    public  string url {get; set;}
+
+    [Parameter]
+    public string errorMessage {get; set;}
+
+
+
+
+
+
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+
+
+            try
+            {
+                var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+                //await AuthenticationStateProvider.NotifyPostPrerender();
+                var user = authState.User;
+                //var role = user.FindFirst("role")?.Value ?? "";
+                //await JS.InvokeVoidAsync("manageVisibility", role);
+                var Url = "/"+url;
+
+
+                if (user.Identity.IsAuthenticated)
+                {
+                   // await Task.Delay(1000);
+                   // NavigationManager.NavigateTo(Url, true);
+                }
+                else
+                {
+                    NavigationManager.NavigateTo("/login", true);
+                }
+
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                errorMessage = $"Erreur lors de l'initialisation du profil : {ex.Message}";
+                Console.WriteLine($"Exception lors de l'initialisation du profil : {ex}");
+            }
+        }
+}
+}

@@ -47,7 +47,7 @@
         try
         {
             await AuthStateProvider.Login(user.Email, user.Password);
-            Navigation.NavigateTo("/profil");
+            Navigation.NavigateTo("/postlogin/counter");
         }
         catch (HttpRequestException ex)
         {
