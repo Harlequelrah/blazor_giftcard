@@ -69,27 +69,30 @@ namespace blazor_giftcard.Services
         {
             _logger.LogInformation("Getting authentication state...");
 
-            if (_isPrerendering)
-            {
-                _logger.LogInformation("Getting authentication state after prerendering...");
+            // if (_isPrerendering)
+            // {
+            //     _logger.LogInformation("Getting authentication state after prerendering...");
 
-                _afterRenderActions.Enqueue(async () =>
-                {
-                    _logger.LogInformation("Apres prerendering");
-                    if (current_user.Identity.IsAuthenticated)
-                    {
+            //     _afterRenderActions.Enqueue(async () =>
+            //     {
+            //         _logger.LogInformation("Apres prerendering");
+            //         if (current_user.Identity.IsAuthenticated)
+            //         {
 
-                        _logger.LogInformation("Utilisateur Actuel est connecté apres prerendu");
-                        Console.WriteLine("username : " + _userName + " role : " + _role);
-                        await _jsRuntime.InvokeVoidAsync("updateUserState", true, _userName);
-                        await _jsRuntime.InvokeVoidAsync("manageVisibility", _role);
-                        // NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
-                    }
-                    else { _logger.LogInformation("Utilisateur Actuel n'est connecté"); }
-                });
-            }
+            //             _logger.LogInformation("Utilisateur Actuel est connecté apres prerendu");
+            //             Console.WriteLine("username : " + _userName + " role : " + _role);
+            //             await _jsRuntime.InvokeVoidAsync("updateUserState", true, _userName);
+            //             await _jsRuntime.InvokeVoidAsync("manageVisibility", _role);
+            //             // NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
+            //         }
+            //         else { _logger.LogInformation("Utilisateur Actuel n'est connecté"); }
+            //     });
+            // }
             if (current_user.Identity.IsAuthenticated)
             {
+                await _jsRuntime.InvokeVoidAsync("updateUserState", true, _userName);
+                await _jsRuntime.InvokeVoidAsync("manageVisibility", _role);
+                _logger.LogInformation($"User authenticated: {current_user.Identity.IsAuthenticated}");
                 return new AuthenticationState(current_user);
 
                 _logger.LogInformation("Utilisateur Actuel est connecté ");
