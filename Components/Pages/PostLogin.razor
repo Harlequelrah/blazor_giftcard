@@ -30,6 +30,10 @@ protected override async Task OnInitializedAsync()
         {
             try
             {
+            if(!string.IsNullOrEmpty(ErrorMessage))
+            {
+                await JS.InvokeVoidAsync("alert",ErrorMessage);
+            }
                 var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
                 var user = authState.User;
                 Username=user.FindFirst("unique_name")?.Value ?? "";
@@ -46,6 +50,7 @@ protected override async Task OnInitializedAsync()
             catch (Exception ex)
             {
                 ErrorMessage = $"Erreur lors de l'initialisation du profil : {ex.Message}";
+                await JS.InvokeVoidAsync("alert",ErrorMessage);
                 Console.WriteLine($"Exception lors de l'initialisation du profil : {ex}");
             }
             try{
@@ -55,8 +60,10 @@ protected override async Task OnInitializedAsync()
             catch (Exception ex)
             {
                 ErrorMessage = $"Erreur lors de l'initialisation du profil : {ex.Message}";
+                await JS.InvokeVoidAsync("alert",ErrorMessage);
                 Console.WriteLine($"Exception lors de l'initialisation du profil : {ex}");
             }
+
 
         }
     }

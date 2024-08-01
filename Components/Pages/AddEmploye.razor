@@ -1,7 +1,9 @@
-@page "/add/employee"
+ @page "/add/employee"
+ <!--
 @using System.Security.Claims
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.JSInterop
+@using blazor_giftcard.Models
 @using Microsoft.AspNetCore.Authorization
 @using blazor_giftcard.Services
 @inject IJSRuntime JS
@@ -9,35 +11,49 @@
 @inject CustomAuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
 
+<head>
+
+<link rel="stylesheet" href="Layout.css" />
+</head>
+<PageTitle>+Employee</PageTitle>
 
 
-
+<div class="container">
+<EditForm Model="beneficiary" OnValidSubmit="HandleRegistration" FormName="RegisterBeneficiaryForm" >
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div>
+        <InputText @bind-Value="beneficiary.Email" placeholder="Email" />
+    </div>
+    <div>
+        <InputText @bind-Value="beneficiary.Password" type="password" placeholder="Password" />
+    </div>
+      <div>
+        <InputText @bind-Value="beneficiary.Adresse" placeholder="Adresse" />
+    </div>
+      <div>
+        <InputText @bind-Value="beneficiary.SubscriberName" placeholder="Nom de la structure" />
+    </div>
+      <div>
+        <InputText @bind-Value="beneficiary.Telephone"  placeholder="Telephone"/>
+    </div>
+    <button type="submit">Add</button>
+</EditForm>
+  <div class="drop drop-1">
+  <p>Bienvenue sur la plateforme du service GIFTCARD de GoChap</p>
+  </div>
+  <div class="drop drop-2"></div>
+  <div class="drop drop-3">
+<p>Remplissez le formulaire suivant pour enregistrer votre entreprise comme souscripteur</p>
+  </div>
+  <div class="drop drop-4"></div>
+  <div class="drop drop-5"></div>
+</div>
 
 
 @code {
-    private string errorMessage;
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            AuthenticationStateProvider.NotifyPostPrerender();
-            try
-            {
-                var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-                var user = authState.User;
+[SupplyParameterFromForm]
+private BeneficiaryDto beneficiary{ get; set; } = new BeneficiaryDto ();
 
 
-                if (!user.Identity.IsAuthenticated)
-                {
-                    NavigationManager.NavigateTo("/login", true);
-                }
-                StateHasChanged();
-            }
-            catch (Exception ex)
-            {
-                errorMessage = $"Erreur lors de l'initialisation du profil : {ex.Message}";
-                Console.WriteLine($"Exception lors de l'initialisation du profil : {ex}");
-            }
-        }
-}
-}
+} -->
