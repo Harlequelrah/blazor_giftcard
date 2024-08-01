@@ -20,13 +20,14 @@ builder.Services.AddHttpClient("authClientAPI", client =>
 {
     client.BaseAddress = new Uri("http://localhost:5107/api/");
 }).AddHttpMessageHandler<JwtAuthorizationHandler>();
+
 builder.Services.AddHttpClient("noauthClientAPI", client =>
 {
     client.BaseAddress = new Uri("http://localhost:5107/api/");
 });
 
 builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("authClientAPI"));
-builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("noauthClientAPI"));
+builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("authClientAPI2"));
 builder.Services.AddHttpContextAccessor();
 
 
@@ -54,6 +55,8 @@ builder.Services.AddAuthentication(options =>
 });
 
 builder.Services.AddAuthorizationCore();
+builder.Services.AddScoped<NotificationService>();
+builder.Services.AddSingleton<UserContextService>();
 builder.Services.AddScoped<SubscriberService>();
 
 

@@ -6,8 +6,6 @@ namespace blazor_giftcard.Models
 
         public int IdSubscription { get; set; }
 
-        public int IdPackage { get; set; }
-
         public string Email { get; set; }
 
 

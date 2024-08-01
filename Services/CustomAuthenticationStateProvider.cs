@@ -32,6 +32,8 @@ namespace blazor_giftcard.Services
         private readonly IJSRuntime _jsRuntime;
         private readonly NavigationManager _navigation;
         private readonly IConfiguration _configuration;
+
+
         private readonly ILogger<CustomAuthenticationStateProvider> _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private string _token;
@@ -50,6 +52,7 @@ namespace blazor_giftcard.Services
             ILogger<CustomAuthenticationStateProvider> logger,
             IConfiguration configuration,
             IHttpClientFactory httpClientFactory
+
              )
         {
             _httpClient = httpClient;
@@ -60,6 +63,7 @@ namespace blazor_giftcard.Services
             _logger = logger;
             _configuration = configuration;
             _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
+            
 
         }
 
@@ -149,6 +153,7 @@ namespace blazor_giftcard.Services
                 }
                 _token = result.Token;
 
+
                 var identity = new ClaimsIdentity();
                 if (!string.IsNullOrEmpty(_token))
                 {
@@ -218,6 +223,7 @@ namespace blazor_giftcard.Services
         {
             if (string.IsNullOrEmpty(_token))
             {
+
                 await _jsRuntime.InvokeVoidAsync("updateUserState", false, _userName);
                 await _jsRuntime.InvokeVoidAsync("localStorage.removeItem", "authToken");
                 _logger.LogInformation("Token removed from localStorage");
@@ -225,6 +231,7 @@ namespace blazor_giftcard.Services
             }
             else
             {
+
                 await _jsRuntime.InvokeVoidAsync("updateUserState", true, _userName);
                 await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "authToken", _token);
                 _logger.LogInformation("Token stored in localStorage");

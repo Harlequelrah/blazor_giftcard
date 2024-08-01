@@ -1,10 +1,13 @@
 @page "/postlogin/{Url}"
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Authorization
+@using blazor_giftcard.Components.Pages
+@inject NotificationService NotificationService
 @using blazor_giftcard.Services
 @inject CustomAuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager Navigation
 @using Microsoft.JSInterop
+@inject UserContextService UserContext
 @inject IJSRuntime JS
 @code {
     [Parameter]
@@ -12,11 +15,6 @@
 
     private IDisposable _locationChangedHandler;
 
-    [Parameter]
-    public string ErrorMessage {get; set;}
-
-    public string Username {get; set;}
-    public string Role {get; set;}
 
 
 protected override async Task OnInitializedAsync()
@@ -30,37 +28,43 @@ protected override async Task OnInitializedAsync()
         {
             try
             {
-            if(!string.IsNullOrEmpty(ErrorMessage))
-            {
-                await JS.InvokeVoidAsync("alert",ErrorMessage);
-            }
                 var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
                 var user = authState.User;
-                Username=user.FindFirst("unique_name")?.Value ?? "";
-                Role = user.FindFirst("role")?.Value ?? "";
+                UserContext.Username = user.FindFirst("unique_name")?.Value ?? "";
+                UserContext.Role = user.FindFirst("role")?.Value ?? "";
+                UserContext.IdUser = int.Parse(user.FindFirst("nameid")?.Value ?? "0");
+                UserContext.Token = await AuthenticationStateProvider.GetTokenAsync();
+                if(UserContext.IdSubscriber!=-0)
+                {
+                    UserContext.IdSubscriber = await UserContext.GetId(UserContext.IdUser);
+                }
                 if (user.Identity.IsAuthenticated)
                 {
                     Navigation.NavigateTo("/"+Url);
                 }
                 else
                 {
+                    UserContext.Username ="";
+                    UserContext.Role     ="";
+                    UserContext.IdUser   =0;
+                    UserContext.IdSubscriber   =0;
+                    UserContext.Token ="";
                     Navigation.NavigateTo("/login", true);
                 }
             }
             catch (Exception ex)
             {
-                ErrorMessage = $"Erreur lors de l'initialisation du profil : {ex.Message}";
-                await JS.InvokeVoidAsync("alert",ErrorMessage);
+                //await JS.InvokeVoidAsync("alert",ErrorMessage);
+                NotificationService.Notify($"Error retrieving packages: {ex.Message}", "error");
                 Console.WriteLine($"Exception lors de l'initialisation du profil : {ex}");
             }
             try{
-                await JS.InvokeVoidAsync("updateUserState", true, Username);
-                await JS.InvokeVoidAsync("manageVisibility", Role);
+                await JS.InvokeVoidAsync("updateUserState", true, UserContext.Username);
+                await JS.InvokeVoidAsync("manageVisibility", UserContext.Role);
             }
             catch (Exception ex)
             {
-                ErrorMessage = $"Erreur lors de l'initialisation du profil : {ex.Message}";
-                await JS.InvokeVoidAsync("alert",ErrorMessage);
+                NotificationService.Notify($"Error retrieving packages: {ex.Message}", "error");
                 Console.WriteLine($"Exception lors de l'initialisation du profil : {ex}");
             }
 

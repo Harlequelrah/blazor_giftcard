@@ -20,6 +20,21 @@ namespace blazor_giftcard.Services
             _noauthClient = httpClientFactory.CreateClient("noauthClientAPI") ?? throw new ArgumentNullException(nameof(httpClientFactory));
             _logger = logger;
         }
+        public async Task<List<Package>> GetPackagesAsync()
+        {
+            try
+            {
+                _logger.LogInformation("Getting packages.");
+                var packagesArray = await _authClient.GetFromJsonAsync<Package[]>("Package");
+                _logger.LogInformation("Successfully retrieved packages.");
+                return new List<Package>(packagesArray);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error retrieving packages: {ex.Message}");
+                return new List<Package>();
+            }
+        }
 
         public async Task<Beneficiary> RegisterBeneficiaryAsync(string token, int idsubscriber, BeneficiaryDto beneficiaryDto)
         {
@@ -71,12 +86,12 @@ namespace blazor_giftcard.Services
             }
         }
 
-        public async Task<Subscription> PostSubscriptionAsync(string token, SubscriptionDto subscriptionDto)
+        public async Task<Subscription> PostSubscriptionAsync(int IdPackage, double? MontantParCarte , int IdSubscriber )
         {
             try
             {
                 _logger.LogInformation("Posting a new subscription.");
-                var response = await _authClient.PostAsJsonAsync($"subscription", subscriptionDto);
+                var response = await _authClient.PostAsJsonAsync($"Subscription", new {IdPackage = IdPackage, IdSubscriber=IdSubscriber ,MontantParCarte=MontantParCarte});
                 response.EnsureSuccessStatusCode();
                 var createdSubscription = await response.Content.ReadFromJsonAsync<Subscription>();
                 _logger.LogInformation("Successfully posted a new subscription.");
@@ -105,5 +120,6 @@ namespace blazor_giftcard.Services
             }
         }
     }
+ 
 
 }

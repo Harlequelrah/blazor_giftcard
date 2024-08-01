@@ -1,0 +1,93 @@
+@page "/view/package"
+@using blazor_giftcard.Services
+@using blazor_giftcard.Models
+@inject NotificationService NotificationService
+@inject SubscriberService SS
+@inject UserContextService User
+@inject IJSRuntime JSRuntime
+@inject UserContextService UserContext
+<head>
+
+<link rel="stylesheet" href="PackageView.css" />
+</head>
+<PageTitle>Subscription</PageTitle>
+<div class="container">
+    @if (Packages == null)
+    {
+        <p>Loading...</p>
+    }
+    else if (Packages.Count == 0)
+    {
+        <p>No packages available.</p>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var package in Packages)
+            {
+                <div class="drop col-md-3">
+                    <h2>@package.NomPackage</h2>
+                    <p>@package.Description</p>
+                    <p>Jours : @(package.NbrJour.HasValue ? package.NbrJour.ToString() : "Illimité")</p>
+                    <p>Budget : @package.Budget €</p>
+                    <p>Prix : @package.Prix €</p>
+                    <p>Max Cartes : @(package.MaxCarte.HasValue ? package.MaxCarte.ToString() : "Illimité")</p>
+                    <p>Montant de Base : @package.MontantBase €</p>
+                    <button @onclick="() => Souscrire(package.Id)">Souscrire</button>
+                </div>
+            }
+        </div>
+    }
+</div>
+<Redirection Url="/view/package"/>
+
+@code
+{
+    private double? Montant;
+    private List<Package> Packages;
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadPackages();
+    }
+
+    private async Task LoadPackages()
+    {
+        try
+        {
+            Packages = await SS.GetPackagesAsync();
+        }
+                catch (Exception ex)
+        {
+            NotificationService.Notify($"Error retrieving packages: {ex.Message}", "error");
+            Console.WriteLine($"Error loading Packages: {ex.Message}");
+        }
+    }
+    private async Task  Souscrire(int packageId)
+    {
+        var confirm =  await JSRuntime.InvokeAsync<bool>("confirm","Souhaitez vous definir un montant par carte?");
+        if (confirm)
+        {
+
+var input = await JSRuntime.InvokeAsync<string>("prompt", "Entrer le montant:");
+
+        if (double.TryParse(input, out double number))
+        {
+            Montant = number;
+        }
+        else
+        {
+            Montant = null;
+        }
+        }
+        try{
+            await SS.PostSubscriptionAsync(packageId, Montant,UserContext.IdSubscriber);
+        }
+        catch (Exception ex)
+        {
+            NotificationService.Notify($"Error subscription {ex.Message}", "error");
+            Console.WriteLine($"Error subscripting Package {packageId} {ex.Message}");
+        }
+
+    }
+
+}

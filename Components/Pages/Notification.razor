@@ -1,0 +1,46 @@
+@code {
+    [Parameter]
+    public string Message { get; set; }
+
+    [Parameter]
+    public bool Visible { get; set; }
+
+    [Parameter]
+    public string NotificationClass { get; set; }
+
+    public void Show(string message, string notificationClass)
+    {
+        Message = message;
+        NotificationClass = notificationClass;
+        Visible = true;
+        StateHasChanged();
+    }
+
+    public void Hide()
+    {
+        Visible = false;
+        StateHasChanged();
+    }
+}
+
+<div class="notification @NotificationClass" style="display: @(Visible ? "block" : "none");">
+    @Message
+    <button @onclick="Hide">Close</button>
+</div>
+
+<style>
+    .notification {
+        padding: 10px;
+        margin: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+    .notification.error {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+    .notification.success {
+        background-color: #d4edda;
+        color: #155724;
+    }
+</style>

@@ -1,5 +1,7 @@
 ﻿@inherits LayoutComponentBase
-
+@using blazor_giftcard.Services
+@inject NotificationService NotificationService
+<Notification @ref="notificationComponent" />
 <div class="page">
     <div class="sidebar">
         <NavMenu />
@@ -81,3 +83,21 @@
     <a href="" class="reload">Reload</a>
     <a class="dismiss">🗙</a>
 </div>
+@code {
+private Notification notificationComponent;
+
+    protected override void OnInitialized()
+    {
+        NotificationService.OnNotify += ShowNotification;
+    }
+
+    private void ShowNotification(string message, string notificationClass)
+    {
+        notificationComponent.Show(message, notificationClass);
+    }
+
+    public void Dispose()
+    {
+        NotificationService.OnNotify -= ShowNotification;
+    }
+}
