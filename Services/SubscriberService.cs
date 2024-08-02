@@ -33,12 +33,6 @@ namespace blazor_giftcard.Services
             _customAuthenticationStateProvider = customAuthenticationStateProvider;
 
         }
-        public async Task OnToken()
-        {
-            var token = await _customAuthenticationStateProvider.GetToken();
-            Console.WriteLine("here is token " + token);
-            _noauthClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        }
         public async Task<List<Package>> GetPackagesAsync()
         {
             try
@@ -89,14 +83,24 @@ namespace blazor_giftcard.Services
             }
         }
 
-        public async Task<List<Subscription>> GetSubscriptionsBySubscriberAsync(string token, int subscriberId)
+        public async Task<List<Subscription>> GetSubscriptionsBySubscriberAsync(int subscriberId)
         {
-            try
+try
             {
-                _logger.LogInformation($"Getting subscriptions for subscriber ID {subscriberId}.");
-                var response = await _authClient.GetFromJsonAsync<List<Subscription>>($"Subscriber/{subscriberId}");
-                _logger.LogInformation($"Successfully retrieved subscriptions for subscriber ID {subscriberId}.");
-                return response;
+                _logger.LogInformation($"Getting subscription with ID {subscriberId}.");
+                var response = await _authClient.GetStringAsync($"Subscription/ForSubscriber/{subscriberId}");
+                using (var document = JsonDocument.Parse(response))
+                {
+                    var root = document.RootElement;
+                    var subscriptionsElement = root.GetProperty("$values");
+                    var options = new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    };
+                    var subscriptions = JsonSerializer.Deserialize<List<Subscription>>(subscriptionsElement.GetRawText(),options);
+                    _logger.LogInformation($"Successfully retrieved subscription with ID {subscriberId}.");
+                    return subscriptions;
+                }
             }
             catch (Exception ex)
             {

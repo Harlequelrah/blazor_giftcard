@@ -1,0 +1,92 @@
+@page "/view/subscription"
+@using blazor_giftcard.Services
+@using blazor_giftcard.Models
+@inject NotificationService NotificationService
+@inject SubscriberService SS
+@using System.Net.Http.Headers
+@inject UserContextService User
+@inject IJSRuntime JSRuntime
+@inject CustomAuthenticationStateProvider CAST
+@inject UserContextService UserContext
+@using System.Net.Http;
+@inject IHttpClientFactory HttpClientFactory
+<head>
+
+<link rel="stylesheet" href="View.css" />
+</head>
+<PageTitle>Subscription</PageTitle>
+<div class="container">
+    @if (Subscriptions == null)
+    {
+        <div class="drop col-md-3">
+        <p>Loading...</p>
+        </div>
+    }
+    else if (Subscriptions.Count == 0)
+    {
+        <p>No subscriptions available.</p>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var subscription in Subscriptions)
+            {
+                <div class="drop col-md-3">
+                    <h2>@subscription.NomPackage</h2>
+                    <p>Budget Restant : @subscription.BudgetRestant €</p>
+                    <p>DateSouscription : @subscription.DateSouscription</p>
+                    <p>Nombre de cartes générées : @(subscription.NbrCarteGenere.HasValue ? subscription.NbrCarteGenere.ToString() : "Illimité")</p>
+                    <p>Montant Par carte : @subscription.MontantParCarte</p>
+                    <p>Date Expiration : @(!string.IsNullOrEmpty(subscription.DateExpiration) ? subscription.DateExpiration : "Illimité")</p>
+                    <button @onclick="() => Add(subscription.Id)">Ajouter un beneficiaire</button>
+                </div>
+            }
+        </div>
+    }
+</div>
+<Redirection Url="view/subscription" />
+
+@code
+{
+    private double? Montant;
+    private List<Subscription> Subscriptions =new List<Subscription>();
+   protected override async Task OnInitializedAsync()
+{
+    //await LoadSubscriptions();
+}
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await Task.Delay(100);
+            await LoadSubscriptions();
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadSubscriptions()
+    {
+
+        try
+        {
+            if(UserContext.IdSubscriber!=0 && UserContext.IdSubscriber !=-1)
+            {
+                Subscriptions = await SS.GetSubscriptionsBySubscriberAsync(UserContext.IdSubscriber);
+            }
+            else  NotificationService.Notify($"le souscripteur est introuvable", "error");
+
+        }
+                catch (Exception ex)
+        {
+            NotificationService.Notify($"Error retrieving subscriptions: {ex.Message}", "error");
+            Console.WriteLine($"Error loading Subscriptions: {ex.Message}");
+        }
+    }
+    private async Task Add(int IdSubscriber)
+    {
+        Console.WriteLine("hello");
+
+    }
+
+
+}

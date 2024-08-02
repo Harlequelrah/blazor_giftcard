@@ -28,8 +28,6 @@ protected override async Task OnInitializedAsync()
                 UserContext.Role = user.FindFirst("role")?.Value ?? "";
                 UserContext.IdUser = int.Parse(user.FindFirst("nameid")?.Value ?? "0");
                 UserContextService.Token= await AuthenticationStateProvider.GetToken();
-                var token = UserContextService.Token;
-                Console.WriteLine("Voici le token: " + token);
                 if(UserContext.IdSubscriber==-1 ||  UserContext.IdSubscriber==0)
                 {
                     Console.WriteLine("getting Id");

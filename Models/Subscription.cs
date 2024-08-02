@@ -11,17 +11,15 @@ namespace blazor_giftcard.Models
 
         public int Id { get; set; }
 
-        public int IdPackage { get; set; }
+        public string NomPackage { get; set; }
 
         public int? NbrCarteGenere { get; set; }
 
         public double BudgetRestant {  get ; set; }
 
-        public int IdSubscriber {get; set;}
-
         public string DateSouscription { get; set; }
 
-        public DateTime? DateExpiration { get; set; }
+        public string? DateExpiration { get; set; }
 
         public double? MontantParCarte { get; set; }
 
