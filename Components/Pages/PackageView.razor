@@ -86,6 +86,7 @@ var input = await JSRuntime.InvokeAsync<string>("prompt", "Entrer le montant:");
         }
         try{
             await SS.PostSubscriptionAsync(packageId, Montant,UserContext.IdSubscriber);
+            NotificationService.Notify($"Votre souscription s'est déroulée avec succès", "success");
         }
         catch (Exception ex)
         {

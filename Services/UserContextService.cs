@@ -36,7 +36,7 @@ public class UserContextService
             try
             {
                 _logger.LogInformation($"Getting Id for User ID {IdUser}.");
-                var response = await _authClient.GetFromJsonAsync<int>($"User/GetIdSubscriber/{IdUser}");
+                var response = await _noauthClient.GetFromJsonAsync<int>($"User/GetIdSubscriber/{IdUser}");
                 _logger.LogInformation($"Successfully retrieved Id for  User ID {IdUser}.");
                 return response;
 

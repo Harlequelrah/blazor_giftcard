@@ -27,7 +27,7 @@ body {
     box-shadow: 10px 10px 60px -8px rgba(0, 0, 0, 0.2);
     transition: all 0.2s ease;
     z-index: 1;
-    margin: 15px;
+    margin: 25px;
     padding: 20px;
     width: 300px; /* Définir une largeur fixe de 300 pixels */
     height: 300px; /* Définir une hauteur fixe de 300 pixels */

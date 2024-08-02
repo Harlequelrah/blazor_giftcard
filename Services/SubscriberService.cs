@@ -4,9 +4,11 @@ using System.Text.Json.Serialization;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using System.Net.Http.Headers;
 using Microsoft.Extensions.Logging;
 using blazor_giftcard.Models;
 using System.Text.Json;
+using System.Text;
 
 
 namespace blazor_giftcard.Services
@@ -106,23 +108,44 @@ namespace blazor_giftcard.Services
             }
         }
 
-        public async Task<Subscription> PostSubscriptionAsync(int IdPackage, double? MontantParCarte, int IdSubscriber)
+  public async Task<Subscription> PostSubscriptionAsync(int IdPackage, double? MontantParCarte, int IdSubscriber)
+{
+    try
+    {
+        Console.WriteLine("IdSubscriber: " + IdSubscriber);
+        var token = await _authStateProvider.GetToken();
+        var jsonData = JsonSerializer.Serialize(new { IdPackage = IdPackage, IdSubscriber = IdSubscriber, MontantParCarte = MontantParCarte });
+        var httpContent = new StringContent(jsonData, Encoding.UTF8, "application/json");
+        var requestMessage = new HttpRequestMessage(HttpMethod.Post, "Subscription")
         {
-            try
-            {
-                _logger.LogInformation("Posting a new subscription.");
-                var response = await _authClient.PostAsJsonAsync($"Subscription", new { IdPackage = IdPackage, IdSubscriber = IdSubscriber, MontantParCarte = MontantParCarte });
-                response.EnsureSuccessStatusCode();
-                var createdSubscription = await response.Content.ReadFromJsonAsync<Subscription>();
-                _logger.LogInformation("Successfully posted a new subscription.");
-                return createdSubscription;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error posting a new subscription: {ex.Message}");
-                return null;
-            }
-        }
+            Content = httpContent
+        };
+        var response = await _authClient.AuthSendAsync(requestMessage, token, CancellationToken.None);
+
+        var responseContent = await response.Content.ReadAsStringAsync();
+        _logger.LogInformation($"Response content: {responseContent}");
+
+        response.EnsureSuccessStatusCode();
+
+        var createdSubscription = await response.Content.ReadFromJsonAsync<Subscription>();
+        _logger.LogInformation("Successfully posted a new subscription.");
+        return createdSubscription;
+    }
+    catch (HttpRequestException httpEx) when (httpEx.Data["HttpResponseMessage"] is HttpResponseMessage responseMessage)
+    {
+        var errorContent = await responseMessage.Content.ReadAsStringAsync();
+        _logger.LogError($"HTTP error posting a new subscription: {httpEx.Message}");
+        _logger.LogError($"Response content: {errorContent}");
+        return null;
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError($"Error posting a new subscription: {ex.Message}");
+        return null;
+    }
+}
+
+
 
         public async Task<List<SubscriberHistory>> GetSubscriberHistoriesAsync(string token, int idSubscriber)
         {

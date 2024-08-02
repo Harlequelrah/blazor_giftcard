@@ -16,24 +16,24 @@ namespace blazor_giftcard.Services
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            try
-            {
-                var token = await _stateProvider.GetToken();
+           // try
+           // {
+                //var token = await _stateProvider.GetToken();
                 // var rendering = await _stateProvider.GetRendering();
                 // var access_token =  await _userContextService.GetTokenAsync();
-                Console.WriteLine($"Adding token to request: {token}");
+              //  Console.WriteLine($"Adding token to request: {token}");
                 // Console.WriteLine($"rendering: {rendering}");
 
                 // Console.WriteLine($"Adding Access token to request: {access_token}");
-                if (!string.IsNullOrEmpty(token))
-                {
-                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error getting token: {ex.Message}");
-            }
+                //if (!string.IsNullOrEmpty(token))
+                //{
+                //    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                //}
+           // }
+           // catch (Exception ex)
+           // {
+            //    Console.WriteLine($"Error getting token: {ex.Message}");
+            //}
             return await base.SendAsync(request, cancellationToken);
 
         }
