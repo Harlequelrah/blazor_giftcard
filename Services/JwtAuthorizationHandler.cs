@@ -6,34 +6,33 @@ namespace blazor_giftcard.Services
 {
     public class JwtAuthorizationHandler : DelegatingHandler
     {
-        private CustomAuthenticationStateProvider _stateProvider;
+        private UserContextService _userContext;
         private readonly IJSRuntime _jsRuntime;
-        public JwtAuthorizationHandler(CustomAuthenticationStateProvider stateProvider, IJSRuntime jsRuntime)
+        private readonly CustomAuthenticationStateProvider _authenticationStateProvider;
+        public JwtAuthorizationHandler( IJSRuntime jsRuntime, UserContextService userContext,CustomAuthenticationStateProvider authenticationStateProvider)
         {
-            _stateProvider = stateProvider;
             _jsRuntime = jsRuntime;
+            _userContext=userContext;
+            _authenticationStateProvider = authenticationStateProvider;
         }
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-           // try
-           // {
-                //var token = await _stateProvider.GetToken();
-                // var rendering = await _stateProvider.GetRendering();
-                // var access_token =  await _userContextService.GetTokenAsync();
-              //  Console.WriteLine($"Adding token to request: {token}");
-                // Console.WriteLine($"rendering: {rendering}");
-
-                // Console.WriteLine($"Adding Access token to request: {access_token}");
-                //if (!string.IsNullOrEmpty(token))
-                //{
-                //    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                //}
-           // }
-           // catch (Exception ex)
-           // {
-            //    Console.WriteLine($"Error getting token: {ex.Message}");
-            //}
+           try
+           {
+                var token = await UserContextService.GetTokenAsync();
+                //var token2 = await _authenticationStateProvider.GetToken();
+                Console.WriteLine("token: " + token);
+                // Console.WriteLine("token: " + token2);
+                if (!string.IsNullOrEmpty(token))
+                {
+                   request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                }
+           }
+           catch (Exception ex)
+           {
+               Console.WriteLine($"Error getting token: {ex.Message}");
+            }
             return await base.SendAsync(request, cancellationToken);
 
         }

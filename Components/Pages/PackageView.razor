@@ -18,7 +18,9 @@
 <div class="container">
     @if (Packages == null)
     {
+        <div class="drop col-md-3">
         <p>Loading...</p>
+        </div>
     }
     else if (Packages.Count == 0)
     {
@@ -49,9 +51,17 @@
 {
     private double? Montant;
     private List<Package> Packages =new List<Package>();
-    protected override async Task OnInitializedAsync()
+   protected override async Task OnInitializedAsync()
+{
+    //await LoadPackages();
+}
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await LoadPackages();
+        if (firstRender)
+        {
+            await LoadPackages();
+            StateHasChanged();
+        }
     }
 
     private async Task LoadPackages()

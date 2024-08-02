@@ -20,21 +20,16 @@
 protected override async Task OnInitializedAsync()
 {
     _locationChangedHandler = Navigation.RegisterLocationChangingHandler(OnLocationChanging);
-
-}
- protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            try
+    try
             {
                 var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
                 var user = authState.User;
                 UserContext.Username = user.FindFirst("unique_name")?.Value ?? "";
                 UserContext.Role = user.FindFirst("role")?.Value ?? "";
                 UserContext.IdUser = int.Parse(user.FindFirst("nameid")?.Value ?? "0");
-                Console.WriteLine(UserContext.Username + UserContext.IdUser);
-                //UserContext.Token = await AuthenticationStateProvider.GetTokenAsync();
+                UserContextService.Token= await AuthenticationStateProvider.GetToken();
+                var token = UserContextService.Token;
+                Console.WriteLine("Voici le token: " + token);
                 if(UserContext.IdSubscriber==-1 ||  UserContext.IdSubscriber==0)
                 {
                     Console.WriteLine("getting Id");
@@ -51,9 +46,9 @@ protected override async Task OnInitializedAsync()
                 {
                     UserContext.Username ="";
                     UserContext.Role     ="";
+                    UserContextService.Token= "";
                     UserContext.IdUser   =0;
                     UserContext.IdSubscriber   =-1;
-                    UserContext.Token ="";
                     Navigation.NavigateTo("/login", true);
                 }
             }
@@ -72,6 +67,13 @@ protected override async Task OnInitializedAsync()
                 NotificationService.Notify($"Error retrieving packages: {ex.Message}", "error");
                 Console.WriteLine($"Exception lors de l'initialisation du profil : {ex}");
             }
+
+}
+ protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+
 
 
         }

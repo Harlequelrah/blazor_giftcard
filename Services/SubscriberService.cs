@@ -15,45 +15,58 @@ namespace blazor_giftcard.Services
 {
     public class SubscriberService
     {
-        private readonly HttpClient _authClient;
+        private readonly Lazy<HttpClient> _httpClient;
         private readonly HttpClient _noauthClient;
+        private readonly HttpClient _authClient;
+
+        private readonly CustomAuthenticationStateProvider _customAuthenticationStateProvider;
 
         private readonly ILogger<SubscriberService> _logger;
 
-        private readonly CustomAuthenticationStateProvider _authStateProvider;
 
-        public SubscriberService(IHttpClientFactory httpClientFactory, ILogger<SubscriberService> logger, CustomAuthenticationStateProvider authStateProvider)
+        public SubscriberService(IHttpClientFactory httpClientFactory, ILogger<SubscriberService> logger, CustomAuthenticationStateProvider customAuthenticationStateProvider)
         {
-            _authClient = httpClientFactory.CreateClient("authClientAPI") ?? throw new ArgumentNullException(nameof(httpClientFactory));
+            _httpClient = new Lazy<HttpClient>(() => httpClientFactory.CreateClient("authClientAPI"));
             _noauthClient = httpClientFactory.CreateClient("noauthClientAPI") ?? throw new ArgumentNullException(nameof(httpClientFactory));
             _logger = logger;
-            _authStateProvider = authStateProvider;
+            _authClient = _httpClient.Value;
+            _customAuthenticationStateProvider = customAuthenticationStateProvider;
+
+        }
+        public async Task OnToken()
+        {
+            var token = await _customAuthenticationStateProvider.GetToken();
+            Console.WriteLine("here is token " + token);
+            _noauthClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         }
         public async Task<List<Package>> GetPackagesAsync()
         {
             try
             {
                 _logger.LogInformation("Getting packages.");
-                var token = await _authStateProvider.GetToken();
-                var requestMessage = new HttpRequestMessage(HttpMethod.Get, "Package");
-                var response = await _authClient.AuthSendAsync(requestMessage, token, CancellationToken.None);
-                var responseContent = await response.Content.ReadAsStringAsync();
-                _logger.LogInformation($"Response content: {responseContent}");
+                var response = await _authClient.GetStringAsync("Package");
 
-                // Désérialiser directement la réponse JSON dans l'objet wrapper
-                var wrapper = JsonSerializer.Deserialize<PackageListWrapper>(responseContent, new JsonSerializerOptions
+                using (var document = JsonDocument.Parse(response))
                 {
-                    PropertyNameCaseInsensitive = true
-                });
+                    var root = document.RootElement;
+                    var packagesElement = root.GetProperty("$values");
+                    var options = new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    };
 
-                _logger.LogInformation("Successfully retrieved packages.");
-                return wrapper?.Packages ?? new List<Package>();
+                    var packages = JsonSerializer.Deserialize<List<Package>>(packagesElement.GetRawText(),options);
+                    _logger.LogInformation("Successfully retrieved Packages.");
+                    return packages;
+                }
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error retrieving packages: {ex.Message}");
-                return new List<Package>();
+                _logger.LogError($"Error retrieving Packages: {ex.Message}");
+                return new List<Package>(); // Retourne une liste vide en cas d'erreur
             }
+
+
         }
 
 
@@ -108,42 +121,26 @@ namespace blazor_giftcard.Services
             }
         }
 
-  public async Task<Subscription> PostSubscriptionAsync(int IdPackage, double? MontantParCarte, int IdSubscriber)
-{
-    try
-    {
-        Console.WriteLine("IdSubscriber: " + IdSubscriber);
-        var token = await _authStateProvider.GetToken();
-        var jsonData = JsonSerializer.Serialize(new { IdPackage = IdPackage, IdSubscriber = IdSubscriber, MontantParCarte = MontantParCarte });
-        var httpContent = new StringContent(jsonData, Encoding.UTF8, "application/json");
-        var requestMessage = new HttpRequestMessage(HttpMethod.Post, "Subscription")
+        public async Task<Subscription> PostSubscriptionAsync(int IdPackage, double? MontantParCarte, int IdSubscriber)
         {
-            Content = httpContent
-        };
-        var response = await _authClient.AuthSendAsync(requestMessage, token, CancellationToken.None);
+            try
+            {
+                var response = await _authClient.PostAsJsonAsync("Subscription", new { IdPackage = IdPackage, IdSubscriber = IdSubscriber, MontantParCarte = MontantParCarte });
+                var responseContent = await response.Content.ReadAsStringAsync();
+                _logger.LogInformation($"Response content: {responseContent}");
 
-        var responseContent = await response.Content.ReadAsStringAsync();
-        _logger.LogInformation($"Response content: {responseContent}");
+                response.EnsureSuccessStatusCode();
+                var createdSubscription = await response.Content.ReadFromJsonAsync<Subscription>();
+                _logger.LogInformation("Successfully posted a new subscription.");
+                return createdSubscription;
+            }
 
-        response.EnsureSuccessStatusCode();
-
-        var createdSubscription = await response.Content.ReadFromJsonAsync<Subscription>();
-        _logger.LogInformation("Successfully posted a new subscription.");
-        return createdSubscription;
-    }
-    catch (HttpRequestException httpEx) when (httpEx.Data["HttpResponseMessage"] is HttpResponseMessage responseMessage)
-    {
-        var errorContent = await responseMessage.Content.ReadAsStringAsync();
-        _logger.LogError($"HTTP error posting a new subscription: {httpEx.Message}");
-        _logger.LogError($"Response content: {errorContent}");
-        return null;
-    }
-    catch (Exception ex)
-    {
-        _logger.LogError($"Error posting a new subscription: {ex.Message}");
-        return null;
-    }
-}
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error posting a new subscription: {ex.Message}");
+                return null;
+            }
+        }
 
 
 
@@ -163,12 +160,5 @@ namespace blazor_giftcard.Services
             }
         }
     }
-    public class PackageListWrapper
-    {
-        [JsonPropertyName("$values")]
-        public List<Package> Packages { get; set; }
-    }
-
-
 
 }
