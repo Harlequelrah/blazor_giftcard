@@ -63,7 +63,7 @@ namespace blazor_giftcard.Services
             _logger = logger;
             _configuration = configuration;
             _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
-            
+
 
         }
 
@@ -200,11 +200,20 @@ namespace blazor_giftcard.Services
                 _logger.LogError(ex, "Loggin out  failed for user");
             }
         }
+        public async Task SetToken(string token)
+        {
+            _token = token;
+        }
+        public async Task<string> Token()
+        {
+            return _token;
+        }
 
         public async Task<string> GetToken()
         {
             var token = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", "authToken");
             _logger.LogInformation($"Token retrieved from localStorage: {token}");
+
             return token;
         }
         public async Task<string> GetTokenAsync()

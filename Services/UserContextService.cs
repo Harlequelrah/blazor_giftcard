@@ -26,6 +26,10 @@ public class UserContextService
             _noauthClient = httpClientFactory.CreateClient("noauthClientAPI") ?? throw new ArgumentNullException(nameof(httpClientFactory));
             _logger = logger;
         }
+        public async Task<string> GetTokenAsync()
+        {
+            return Token;
+        }
 
         public async Task<int> GetId(int IdUser)
         {
@@ -35,12 +39,15 @@ public class UserContextService
                 var response = await _authClient.GetFromJsonAsync<int>($"User/GetIdSubscriber/{IdUser}");
                 _logger.LogInformation($"Successfully retrieved Id for  User ID {IdUser}.");
                 return response;
+
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Error retrieving Id for  User ID {IdUser}: {ex.Message}");
-                return 0 ;
+                return -1;
+
             }
+
 
         }
 

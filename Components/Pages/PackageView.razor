@@ -3,9 +3,13 @@
 @using blazor_giftcard.Models
 @inject NotificationService NotificationService
 @inject SubscriberService SS
+@using System.Net.Http.Headers
 @inject UserContextService User
 @inject IJSRuntime JSRuntime
+@inject CustomAuthenticationStateProvider CAST
 @inject UserContextService UserContext
+@using System.Net.Http;
+@inject IHttpClientFactory HttpClientFactory
 <head>
 
 <link rel="stylesheet" href="PackageView.css" />
@@ -30,7 +34,7 @@
                     <p>@package.Description</p>
                     <p>Jours : @(package.NbrJour.HasValue ? package.NbrJour.ToString() : "Illimité")</p>
                     <p>Budget : @package.Budget €</p>
-                    <p>Prix : @package.Prix €</p>
+                    <p class="price">Prix : @package.Prix €</p>
                     <p>Max Cartes : @(package.MaxCarte.HasValue ? package.MaxCarte.ToString() : "Illimité")</p>
                     <p>Montant de Base : @package.MontantBase €</p>
                     <button @onclick="() => Souscrire(package.Id)">Souscrire</button>
@@ -39,12 +43,12 @@
         </div>
     }
 </div>
-<Redirection Url="/view/package"/>
+<Redirection Url="view/package" />
 
 @code
 {
     private double? Montant;
-    private List<Package> Packages;
+    private List<Package> Packages =new List<Package>();
     protected override async Task OnInitializedAsync()
     {
         await LoadPackages();
@@ -52,6 +56,7 @@
 
     private async Task LoadPackages()
     {
+
         try
         {
             Packages = await SS.GetPackagesAsync();

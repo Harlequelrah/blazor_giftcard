@@ -47,7 +47,7 @@
         try
         {
             await AuthStateProvider.Login(user.Email, user.Password);
-            Navigation.NavigateTo("/counter");
+            Navigation.NavigateTo("/view/package");
         }
         catch (HttpRequestException ex)
         {

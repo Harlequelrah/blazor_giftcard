@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using blazor_giftcard.Models;
+using System.Text.Json;
+
 
 namespace blazor_giftcard.Services
 {
@@ -12,22 +15,37 @@ namespace blazor_giftcard.Services
     {
         private readonly HttpClient _authClient;
         private readonly HttpClient _noauthClient;
+
         private readonly ILogger<SubscriberService> _logger;
 
-        public SubscriberService(IHttpClientFactory httpClientFactory, ILogger<SubscriberService> logger)
+        private readonly CustomAuthenticationStateProvider _authStateProvider;
+
+        public SubscriberService(IHttpClientFactory httpClientFactory, ILogger<SubscriberService> logger, CustomAuthenticationStateProvider authStateProvider)
         {
             _authClient = httpClientFactory.CreateClient("authClientAPI") ?? throw new ArgumentNullException(nameof(httpClientFactory));
             _noauthClient = httpClientFactory.CreateClient("noauthClientAPI") ?? throw new ArgumentNullException(nameof(httpClientFactory));
             _logger = logger;
+            _authStateProvider = authStateProvider;
         }
         public async Task<List<Package>> GetPackagesAsync()
         {
             try
             {
                 _logger.LogInformation("Getting packages.");
-                var packagesArray = await _authClient.GetFromJsonAsync<Package[]>("Package");
+                var token = await _authStateProvider.GetToken();
+                var requestMessage = new HttpRequestMessage(HttpMethod.Get, "Package");
+                var response = await _authClient.AuthSendAsync(requestMessage, token, CancellationToken.None);
+                var responseContent = await response.Content.ReadAsStringAsync();
+                _logger.LogInformation($"Response content: {responseContent}");
+
+                // Désérialiser directement la réponse JSON dans l'objet wrapper
+                var wrapper = JsonSerializer.Deserialize<PackageListWrapper>(responseContent, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+
                 _logger.LogInformation("Successfully retrieved packages.");
-                return new List<Package>(packagesArray);
+                return wrapper?.Packages ?? new List<Package>();
             }
             catch (Exception ex)
             {
@@ -35,6 +53,8 @@ namespace blazor_giftcard.Services
                 return new List<Package>();
             }
         }
+
+
 
         public async Task<Beneficiary> RegisterBeneficiaryAsync(string token, int idsubscriber, BeneficiaryDto beneficiaryDto)
         {
@@ -86,12 +106,12 @@ namespace blazor_giftcard.Services
             }
         }
 
-        public async Task<Subscription> PostSubscriptionAsync(int IdPackage, double? MontantParCarte , int IdSubscriber )
+        public async Task<Subscription> PostSubscriptionAsync(int IdPackage, double? MontantParCarte, int IdSubscriber)
         {
             try
             {
                 _logger.LogInformation("Posting a new subscription.");
-                var response = await _authClient.PostAsJsonAsync($"Subscription", new {IdPackage = IdPackage, IdSubscriber=IdSubscriber ,MontantParCarte=MontantParCarte});
+                var response = await _authClient.PostAsJsonAsync($"Subscription", new { IdPackage = IdPackage, IdSubscriber = IdSubscriber, MontantParCarte = MontantParCarte });
                 response.EnsureSuccessStatusCode();
                 var createdSubscription = await response.Content.ReadFromJsonAsync<Subscription>();
                 _logger.LogInformation("Successfully posted a new subscription.");
@@ -120,6 +140,12 @@ namespace blazor_giftcard.Services
             }
         }
     }
- 
+    public class PackageListWrapper
+    {
+        [JsonPropertyName("$values")]
+        public List<Package> Packages { get; set; }
+    }
+
+
 
 }

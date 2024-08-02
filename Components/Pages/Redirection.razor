@@ -33,8 +33,8 @@ protected override async Task OnInitializedAsync()
                 UserContext.Username = user.FindFirst("unique_name")?.Value ?? "";
                 UserContext.Role = user.FindFirst("role")?.Value ?? "";
                 UserContext.IdUser = int.Parse(user.FindFirst("nameid")?.Value ?? "0");
-                UserContext.Token = await AuthenticationStateProvider.GetTokenAsync();
-                if(UserContext.IdSubscriber!=-0)
+                //UserContext.Token = await AuthenticationStateProvider.GetTokenAsync();
+                if(UserContext.IdSubscriber!=-1 && UserContext.IdSubscriber!=0)
                 {
                     UserContext.IdSubscriber = await UserContext.GetId(UserContext.IdUser);
                 }
@@ -47,7 +47,7 @@ protected override async Task OnInitializedAsync()
                     UserContext.Username ="";
                     UserContext.Role     ="";
                     UserContext.IdUser   =0;
-                    UserContext.IdSubscriber   =0;
+                    UserContext.IdSubscriber   =-1;
                     UserContext.Token ="";
                     Navigation.NavigateTo("/login", true);
                 }
