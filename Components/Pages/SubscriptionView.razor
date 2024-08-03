@@ -3,13 +3,12 @@
 @using blazor_giftcard.Models
 @inject NotificationService NotificationService
 @inject SubscriberService SS
-@using System.Net.Http.Headers
 @inject UserContextService User
+@inject NavigationManager Navigation
 @inject IJSRuntime JSRuntime
 @inject CustomAuthenticationStateProvider CAST
 @inject UserContextService UserContext
-@using System.Net.Http;
-@inject IHttpClientFactory HttpClientFactory
+@rendermode InteractiveServer
 <head>
 
 <link rel="stylesheet" href="View.css" />
@@ -48,12 +47,7 @@
 
 @code
 {
-    private double? Montant;
     private List<Subscription> Subscriptions =new List<Subscription>();
-   protected override async Task OnInitializedAsync()
-{
-    //await LoadSubscriptions();
-}
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -82,11 +76,10 @@
             Console.WriteLine($"Error loading Subscriptions: {ex.Message}");
         }
     }
-    private async Task Add(int IdSubscriber)
+    private async Task Add(int IdSubscription)
     {
-        Console.WriteLine("hello");
-
+        Console.WriteLine("ajoutdesouscription");
+        Navigation.NavigateTo($"/add/employe/{IdSubscription}");
     }
-
 
 }

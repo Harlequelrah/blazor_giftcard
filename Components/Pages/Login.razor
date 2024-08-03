@@ -3,18 +3,14 @@
 @using Microsoft.AspNetCore.Components.Forms
 @inject CustomAuthenticationStateProvider AuthStateProvider
 @inject NavigationManager Navigation
+@inject NotificationService Notification
 <head>
 
 <link rel="stylesheet" href="Layout.css" />
 </head>
 <PageTitle>Login</PageTitle>
 
-@if (!string.IsNullOrEmpty(errorMessage))
-{
-    <div class="alert alert-danger">
-        @errorMessage
-    </div>
-}
+
 <div class="loginbox container ">
 <EditForm Model="user" OnValidSubmit="HandleLogin" FormName="loginForm">
     <DataAnnotationsValidator />
@@ -39,24 +35,22 @@
 @code {
     [SupplyParameterFromForm]
     private User user { get; set; } = new User();
-    private string errorMessage;
     private async Task HandleLogin()
     {
-        errorMessage = null; // Clear previous error message
 
         try
         {
             await AuthStateProvider.Login(user.Email, user.Password);
-            Navigation.NavigateTo("/view/subscription");
+            Navigation.NavigateTo("/view/package");
         }
         catch (HttpRequestException ex)
         {
-            errorMessage = "Nom d'utilisateur ou mot de passe incorrect.";
+            Notification.Notify("Nom d'utilisateur ou mot de passe incorrect.","error");
             Console.WriteLine($"Login error: {ex.Message}");
         }
         catch (Exception ex)
         {
-            errorMessage = "Une erreur inconnue s'est produite.";
+            Notification.Notify("Une erreur inconnue s'est produite..","error");
             Console.WriteLine($"Unexpected error: {ex.Message}");
         }
     }

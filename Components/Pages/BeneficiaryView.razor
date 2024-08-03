@@ -1,0 +1,78 @@
+@page "/view/beneficiary"
+@using blazor_giftcard.Services
+@using blazor_giftcard.Models
+@inject NotificationService NotificationService
+@inject SubscriberService SS
+@inject UserContextService User
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+@inject CustomAuthenticationStateProvider CAST
+@inject UserContextService UserContext
+@rendermode InteractiveServer
+<head>
+
+<link rel="stylesheet" href="View.css" />
+</head>
+<PageTitle>Beneficiaries</PageTitle>
+<div class="container">
+    @if (Beneficiaries == null)
+    {
+        <div class="drop col-md-3">
+        <p>Loading...</p>
+        </div>
+    }
+    else if (Beneficiaries.Count == 0)
+    {
+        <p>No beneficiaries available.</p>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var beneficiary in Beneficiaries)
+            {
+                <div class="drop col-md-3">
+                    <h2>Id : @beneficiary.Id</h2>
+                    <p>Nom : @beneficiary.Nom</p>
+                    <p>Prenom : @beneficiary.Prenom</p>
+                    <p>Numero de Telephone :@beneficiary.TelephoneNumero</p>
+                    <p>@(beneficiary.Has_gochap ? "Est Utilisateur de Gochap":"N'Est pas Utilisateur de Gochap")</p>
+                </div>
+            }
+        </div>
+    }
+</div>
+<Redirection Url="view/beneficiary" />
+
+@code
+{
+    private List<Beneficiary> Beneficiaries =new List<Beneficiary>();
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await Task.Delay(100);
+            await LoadBeneficiaries();
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadBeneficiaries()
+    {
+
+        try
+        {
+            if(UserContext.IdSubscriber!=0 && UserContext.IdSubscriber !=-1)
+            {
+                Beneficiaries = await SS.GetSubscriberBeneficiariesAsync(UserContext.IdSubscriber);
+            }
+            else  NotificationService.Notify($"le souscripteur est introuvable", "error");
+
+        }
+                catch (Exception ex)
+        {
+            NotificationService.Notify($"Error retrieving beneficiaries: {ex.Message}", "error");
+            Console.WriteLine($"Error loading Beneficiaries: {ex.Message}");
+        }
+    }
+
+}

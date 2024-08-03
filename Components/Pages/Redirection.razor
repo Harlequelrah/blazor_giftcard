@@ -81,6 +81,7 @@ protected override async Task OnInitializedAsync()
         var newUrl = context.TargetLocation;
             if(newUrl==Url)
             {
+                Console.WriteLine($"Location changed to {Url} to {newUrl}");
                 context.PreventNavigation();
             }
         return ValueTask.CompletedTask;

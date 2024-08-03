@@ -182,3 +182,26 @@ input[type="button"] {
 ::placeholder {
   color: #fff;
 }
+
+
+
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem; /* Espace entre les champs */
+  width:100px;
+  margin-left:115px;
+}
+
+.checkbox-container input[type="checkbox"] {
+  accent-color: #FA4B37; /* Couleur du checkmark, ajustez selon le besoin */
+  margin-right: 0.5rem; /* Espace entre la case à cocher et le texte */
+}
+
+.checkbox-container label {
+  color: white; /* Couleur du texte pour le label */
+  font-weight: 500; /* Style du texte */
+  font-size: 1rem; /* Taille du texte */
+
+}

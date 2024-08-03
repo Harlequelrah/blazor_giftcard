@@ -72,6 +72,12 @@ namespace blazor_giftcard.Services
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
             _logger.LogInformation("Getting authentication state...");
+            if (_role != "ADMIN" && _role != "SUBSCRIBER")
+            {
+                _logger.LogInformation("Not Authorized");
+                current_user = new ClaimsPrincipal(new ClaimsIdentity());
+                return new AuthenticationState(current_user);
+            }
 
             if (current_user.Identity.IsAuthenticated)
             {
@@ -80,12 +86,7 @@ namespace blazor_giftcard.Services
 
                 _logger.LogInformation("Utilisateur Actuel est connecté ");
                 NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
-                if (_role != "ADMIN" && _role != "SUBSCRIBER")
-                {
-                    _logger.LogInformation("Not Authorized");
-                    current_user = new ClaimsPrincipal(new ClaimsIdentity());
-                    return new AuthenticationState(current_user);
-                }
+
             }
             else { _logger.LogInformation("Utilisateur Actuel n'est connecté"); }
             // return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
@@ -171,7 +172,10 @@ namespace blazor_giftcard.Services
                 current_user = new ClaimsPrincipal(identity);
                 _role = current_user.FindFirst("role")?.Value ?? "";
                 _userName = current_user.FindFirst("unique_name")?.Value ?? "";
+
                 await SecureToken();
+
+
                 _logger.LogInformation($"User authenticated: {current_user.Identity.IsAuthenticated}");
 
             }

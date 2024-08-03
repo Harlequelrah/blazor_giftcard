@@ -1,0 +1,93 @@
+@page "/add/beneficiary/{IdSubscription:int}"
+
+
+@using Microsoft.JSInterop
+@using blazor_giftcard.Models
+@using blazor_giftcard.Services
+@inject IJSRuntime JSRuntime
+@rendermode InteractiveServer
+@inject CustomAuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+@inject UserContextService UserContext
+@inject SubscriberService SS
+@inject NotificationService Notification
+
+<head>
+
+<link rel="stylesheet" href="Layout.css" />
+</head>
+<PageTitle>+Employee</PageTitle>
+
+
+<div class="container">
+<EditForm Model="beneficiary" OnValidSubmit="RegisterBeneficiary" FormName="RegisterBeneficiaryForm" >
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div>
+        <InputText @bind-Value="beneficiary.Email" placeholder="Email" />
+    </div>
+    <div>
+        <InputText @bind-Value="beneficiary.Nom"  placeholder="Nom" />
+    </div>
+      <div>
+        <InputText @bind-Value="beneficiary.Prenom" placeholder="Prenom" />
+    </div>
+    <div class="checkbox-container">
+    <InputCheckbox @bind-Value="beneficiary.Has_gochap" />
+    <label>A gochap</label>
+</div>
+
+
+        @if (!beneficiary.Has_gochap)
+        {
+            <div>
+                <InputText @bind-Value="beneficiary.TelephoneNumero" placeholder="Telephone" />
+            </div>
+        }
+    <button type="submit" >Enregistrer</button>
+</EditForm>
+  <div class="drop drop-1">
+  <p>Remplissez le formulaire suivant pour enregistrer votre beneficiaire</p>
+  </div>
+  <div class="drop drop-2"></div>
+  <div class="drop drop-4"></div>
+  <div class="drop drop-5"></div>
+</div>
+<Redirection Url="@RedirectUrl" />
+
+@code {
+
+[Parameter]
+public  int IdSubscription {get; set;}
+[SupplyParameterFromForm]
+private BeneficiaryDto beneficiary{ get; set; } = new BeneficiaryDto();
+private string RedirectUrl => $"add/beneficiary/{IdSubscription}";
+
+
+
+private async Task RegisterBeneficiary()
+{
+        beneficiary.IdSubscription = IdSubscription;
+        var confirm =  await JSRuntime.InvokeAsync<bool>("confirm","Souhaitez vous enregistrer ce beneficiaire?");
+        if (confirm)
+        {
+          try
+          {
+            await SS.RegisterBeneficiaryAsync(UserContext.IdSubscriber,beneficiary);
+            Notification.Notify($"L'enregistrement s'est déroulée avec succès", "success");
+            beneficiary=new BeneficiaryDto();
+
+          }
+        catch (Exception ex)
+        {
+            Notification.Notify($"Error lors de l 'enregistrement du beneficiaire","error");
+            Console.WriteLine($"Error loading Subscriptions: {ex.Message}");
+        }
+
+        }
+
+
+}
+
+
+}

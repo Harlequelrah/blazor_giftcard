@@ -49,7 +49,7 @@ namespace blazor_giftcard.Services
                         PropertyNameCaseInsensitive = true
                     };
 
-                    var packages = JsonSerializer.Deserialize<List<Package>>(packagesElement.GetRawText(),options);
+                    var packages = JsonSerializer.Deserialize<List<Package>>(packagesElement.GetRawText(), options);
                     _logger.LogInformation("Successfully retrieved Packages.");
                     return packages;
                 }
@@ -65,12 +65,12 @@ namespace blazor_giftcard.Services
 
 
 
-        public async Task<Beneficiary> RegisterBeneficiaryAsync(string token, int idsubscriber, BeneficiaryDto beneficiaryDto)
+        public async Task<Beneficiary> RegisterBeneficiaryAsync(int idsubscriber, BeneficiaryDto beneficiaryDto)
         {
             try
             {
                 _logger.LogInformation($"Registering beneficiary for subscriber ID {idsubscriber}.");
-                var response = await _authClient.PostAsJsonAsync($"register/beneficiary/bysubscriber/{idsubscriber}", beneficiaryDto);
+                var response = await _authClient.PostAsJsonAsync($"User/register/beneficiary/bysubscriber/{idsubscriber}", beneficiaryDto);
                 response.EnsureSuccessStatusCode();
                 var registeredBeneficiary = await response.Content.ReadFromJsonAsync<Beneficiary>();
                 _logger.LogInformation($"Successfully registered beneficiary for subscriber ID {idsubscriber}.");
@@ -85,7 +85,7 @@ namespace blazor_giftcard.Services
 
         public async Task<List<Subscription>> GetSubscriptionsBySubscriberAsync(int subscriberId)
         {
-try
+            try
             {
                 _logger.LogInformation($"Getting subscription with ID {subscriberId}.");
                 var response = await _authClient.GetStringAsync($"Subscription/ForSubscriber/{subscriberId}");
@@ -97,7 +97,7 @@ try
                     {
                         PropertyNameCaseInsensitive = true
                     };
-                    var subscriptions = JsonSerializer.Deserialize<List<Subscription>>(subscriptionsElement.GetRawText(),options);
+                    var subscriptions = JsonSerializer.Deserialize<List<Subscription>>(subscriptionsElement.GetRawText(), options);
                     _logger.LogInformation($"Successfully retrieved subscription with ID {subscriberId}.");
                     return subscriptions;
                 }
@@ -108,22 +108,32 @@ try
                 return new List<Subscription>();
             }
         }
-
-        public async Task<Subscription> GetSubscriptionAsync(string token, int idSubscription)
+        public async Task<List<Beneficiary>> GetSubscriberBeneficiariesAsync(int subscriberId)
         {
             try
             {
-                _logger.LogInformation($"Getting subscription with ID {idSubscription}.");
-                var response = await _authClient.GetFromJsonAsync<Subscription>($"{idSubscription}");
-                _logger.LogInformation($"Successfully retrieved subscription with ID {idSubscription}.");
-                return response;
+                _logger.LogInformation($"Getting beneficiaries for subscriber with ID {subscriberId}.");
+                var response = await _authClient.GetStringAsync($"Subscriber/beneficiaries/{subscriberId}");
+                using (var document = JsonDocument.Parse(response))
+                {
+                    var root = document.RootElement;
+                    var beneficiariesElement = root.GetProperty("$values");
+                    var options = new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    };
+                    var beneficiaries = JsonSerializer.Deserialize<List<Beneficiary>>(beneficiariesElement.GetRawText(), options);
+                    _logger.LogInformation($"Successfully retrieved beneficiaries for subscriber with ID {subscriberId}.");
+                    return beneficiaries;
+                }
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error retrieving subscription with ID {idSubscription}: {ex.Message}");
-                return null;
+                _logger.LogError($"Error retrieving beneficiaries for subscriber ID {subscriberId}: {ex.Message}");
+                return new List<Beneficiary>();
             }
         }
+
 
         public async Task<Subscription> PostSubscriptionAsync(int IdPackage, double? MontantParCarte, int IdSubscriber)
         {
