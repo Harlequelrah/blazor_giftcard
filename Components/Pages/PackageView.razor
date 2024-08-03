@@ -4,7 +4,6 @@
 @inject NotificationService NotificationService
 @inject SubscriberService SS
 @inject NavigationManager Navigation
-@inject UserContextService User
 @inject IJSRuntime JSRuntime
 @inject CustomAuthenticationStateProvider CAST
 @inject UserContextService UserContext
@@ -95,7 +94,7 @@ var input = await JSRuntime.InvokeAsync<string>("prompt", "Entrer le montant:");
         }
         }
         try{
-            await SS.PostSubscriptionAsync(packageId, Montant,UserContext.IdSubscriber);
+            await SS.PostSubscriptionAsync(packageId, Montant,UserContext.Subscriber.Id);
             NotificationService.Notify($"Votre souscription s'est déroulée avec succès", "success");
             Navigation.NavigateTo("/view/subscription");
 

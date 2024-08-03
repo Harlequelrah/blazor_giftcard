@@ -4,6 +4,7 @@
 @using blazor_giftcard.Components.Pages
 @inject NotificationService NotificationService
 @using blazor_giftcard.Services
+@using blazor_giftcard.Models
 @inject CustomAuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager Navigation
 @using Microsoft.JSInterop
@@ -26,15 +27,17 @@ protected override async Task OnInitializedAsync()
                 var user = authState.User;
                 UserContext.Username = user.FindFirst("unique_name")?.Value ?? "";
                 UserContext.Role = user.FindFirst("role")?.Value ?? "";
-                UserContext.IdUser = int.Parse(user.FindFirst("nameid")?.Value ?? "0");
+                UserContext.Subscriber.IdUser = int.Parse(user.FindFirst("nameid")?.Value ?? "0");
+                Console.WriteLine("Subscriber Id" + UserContext.Subscriber.IdUser);
                 UserContextService.Token= await AuthenticationStateProvider.GetToken();
-                if(UserContext.IdSubscriber==-1 ||  UserContext.IdSubscriber==0)
+                if(UserContext.Subscriber.SubscriberWallet==null)
                 {
-                    Console.WriteLine("getting Id");
-                    UserContext.IdSubscriber = await UserContext.GetId(UserContext.IdUser);
+                    Console.WriteLine("Getting Subscriber");
+                    UserContext.Subscriber= await UserContext.GetSubscriberAsync(UserContext.Subscriber.IdUser);
                 }
-                else{
-                    Console.WriteLine("IdSubscriber = " + UserContext.IdSubscriber);
+                if(UserContext.Subscriber.SubscriberWallet!=null)
+                {
+                    await JS.InvokeVoidAsync("setSubscriber",UserContext.Subscriber.SubscriberName,$"{UserContext.Subscriber.SubscriberWallet.Solde} {@UserContext.Subscriber.SubscriberWallet.Devise}");
                 }
                 if (user.Identity.IsAuthenticated)
                 {
@@ -42,12 +45,7 @@ protected override async Task OnInitializedAsync()
                 }
                 else
                 {
-                    UserContext.Username ="";
-                    UserContext.Role     ="";
-                    UserContextService.Token= "";
-                    UserContext.IdUser   =0;
-                    UserContext.IdSubscriber   =-1;
-                    Navigation.NavigateTo("/login", true);
+                    Navigation.NavigateTo("/logout", true);
                 }
             }
             catch (Exception ex)
@@ -83,6 +81,10 @@ protected override async Task OnInitializedAsync()
             {
                 Console.WriteLine($"Location changed to {Url} to {newUrl}");
                 context.PreventNavigation();
+            }
+            if(newUrl=="http://localhost:5213/")
+            {
+                Navigation.NavigateTo("/logout", true);
             }
         return ValueTask.CompletedTask;
     }

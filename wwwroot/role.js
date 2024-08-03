@@ -32,4 +32,14 @@ $(document).ready(function () {
             $("#profil").hide();
         }
     };
+    window.setSubscriber = function (NomSubscriber, BudgetSubscriber) {
+        // Met à jour le texte de l'élément avec l'ID 'NomSubscriber'
+        $("#NomSubscriber").text(NomSubscriber);
+
+        // Met à jour le texte de l'élément avec l'ID 'SoldeSubscriber'
+        $("#BudgetSubscriber").text(BudgetSubscriber);
+    };
+    window.hello = function (Nom) {
+        alert("Hello!" + Nom);
+    };
 });

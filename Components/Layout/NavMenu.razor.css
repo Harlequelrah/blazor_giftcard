@@ -110,3 +110,11 @@
         overflow-y: auto;
     }
 }
+.price
+{
+font-weight: bold;
+border-top: 1px solid #FA4B37;
+padding-top: 1px;
+margin-top: auto; /* Pousser le prix vers le bas */
+color: #FA4B37;
+}

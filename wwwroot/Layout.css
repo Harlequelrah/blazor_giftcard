@@ -127,6 +127,23 @@ input[type="button"] {
   left: -60px;
   z-index: -1;
 }
+
+.dropsubs{
+  background: rgba(255, 255, 255, 0.3);
+  /* backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px); */
+  /* border-radius: 10px;
+  border-left: 1px solid rgba(255, 255, 255, 0.3);
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 10px 10px 60px -8px rgba(0, 0, 0, 0.2); */
+  /* position: absolute; */
+  transition: all 0.2s ease;
+  height: 10px;
+  width: 10px;
+  /* top: 60px;
+  left: -60px; */
+  z-index: -1;
+}
 .drop-2 {
 
   height: 80px;
@@ -154,6 +171,7 @@ input[type="button"] {
   left: 250px;
   z-index: -1;
 }
+
 
 
 

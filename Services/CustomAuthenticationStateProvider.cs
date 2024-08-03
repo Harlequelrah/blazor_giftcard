@@ -72,15 +72,16 @@ namespace blazor_giftcard.Services
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
             _logger.LogInformation("Getting authentication state...");
-            if (_role != "ADMIN" && _role != "SUBSCRIBER")
-            {
-                _logger.LogInformation("Not Authorized");
-                current_user = new ClaimsPrincipal(new ClaimsIdentity());
-                return new AuthenticationState(current_user);
-            }
+
 
             if (current_user.Identity.IsAuthenticated)
             {
+                if (_role != "ADMIN" && _role != "SUBSCRIBER")
+                {
+                    _logger.LogInformation("Not Authorized");
+                    current_user = new ClaimsPrincipal(new ClaimsIdentity());
+                    return new AuthenticationState(current_user);
+                }
                 _logger.LogInformation($"User authenticated: {current_user.Identity.IsAuthenticated}");
                 return new AuthenticationState(current_user);
 

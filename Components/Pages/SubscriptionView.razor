@@ -3,7 +3,6 @@
 @using blazor_giftcard.Models
 @inject NotificationService NotificationService
 @inject SubscriberService SS
-@inject UserContextService User
 @inject NavigationManager Navigation
 @inject IJSRuntime JSRuntime
 @inject CustomAuthenticationStateProvider CAST
@@ -63,9 +62,9 @@
 
         try
         {
-            if(UserContext.IdSubscriber!=0 && UserContext.IdSubscriber !=-1)
+            if(UserContext.Subscriber.Id!=0)
             {
-                Subscriptions = await SS.GetSubscriptionsBySubscriberAsync(UserContext.IdSubscriber);
+                Subscriptions = await SS.GetSubscriptionsBySubscriberAsync(UserContext.Subscriber.Id);
             }
             else  NotificationService.Notify($"le souscripteur est introuvable", "error");
 

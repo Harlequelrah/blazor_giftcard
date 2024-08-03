@@ -1,6 +1,6 @@
 ﻿<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">GOCHAP GIFT CARD </a>
+        <a class="navbar-brand" href="#">GOCHAP GIFT CARD </a>
     </div>
 </div>
 
@@ -8,6 +8,16 @@
 
 <div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
     <nav class="flex-column" >
+        <div class="subscriber nav-item px-3">
+            <NavLink class="nav-link" href="#" >
+                <span class="bi bi-person-fill fs-4" aria-hidden="true"></span>Nom : <span id="NomSubscriber"></span>
+            </NavLink>
+        </div>
+        <div class="subscriber nav-item px-3">
+            <NavLink class="nav-link" href="#" >
+                <span class="bi bi-credit-card fs-4" aria-hidden="true"></span>Budget : <span id="BudgetSubscriber"></span>
+            </NavLink>
+        </div>
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
                 <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
@@ -37,4 +47,5 @@
         </div>
     </nav>
 </div>
+
 

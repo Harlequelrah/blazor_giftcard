@@ -17,6 +17,8 @@ namespace blazor_giftcard.Models
 
         public string SubscriberName { get; set; }
 
+        public SubscriberWallet SubscriberWallet { get; set; }
+
 
 
 

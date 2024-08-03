@@ -17,6 +17,8 @@ namespace blazor_giftcard.Services
         public int IdUser { get; set; }
         public int IdSubscriber { get; set; }
 
+        public Subscriber Subscriber { get; set; } = new Subscriber();
+
         public static string Token { get; set; }
 
         private readonly Lazy<HttpClient> _httpClient;
@@ -51,10 +53,24 @@ namespace blazor_giftcard.Services
             {
                 _logger.LogError($"Error retrieving Id for  User ID {IdUser}: {ex.Message}");
                 return -1;
-
             }
+        }
 
-
+                public async Task<Subscriber> GetSubscriberAsync(int IdUser)
+        {
+            try
+            {
+                var _authClient = _httpClient.Value;
+                _logger.LogInformation($"Getting Subscriber for User ID {IdUser}.");
+                var response = await _authClient.GetFromJsonAsync<Subscriber>($"Subscriber/ByUser/{IdUser}");
+                _logger.LogInformation($"Successfully retrieved Subscriber for  User ID {IdUser}.");
+                return response;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error retrieving Subscriber for  User ID {IdUser}: {ex.Message}");
+                return new Subscriber();
+            }
         }
 
 

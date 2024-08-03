@@ -73,7 +73,7 @@ private async Task RegisterBeneficiary()
         {
           try
           {
-            await SS.RegisterBeneficiaryAsync(UserContext.IdSubscriber,beneficiary);
+            await SS.RegisterBeneficiaryAsync(UserContext.Subscriber.Id,beneficiary);
             Notification.Notify($"L'enregistrement s'est déroulée avec succès", "success");
             beneficiary=new BeneficiaryDto();
 

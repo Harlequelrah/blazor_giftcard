@@ -1,6 +1,10 @@
 
 @page  "/logout"
 @using blazor_giftcard.Services
+@using blazor_giftcard.Models
+@using Microsoft.JSInterop
+@inject IJSRuntime JS
+@inject UserContextService UserContext
 @inject CustomAuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
 @code {
@@ -9,9 +13,13 @@
     {
         try
         {
+            UserContext.Subscriber = new Subscriber();
+            UserContext.Username ="";
+            UserContext.Role     ="";
+            UserContextService.Token= "";
+            await JS.InvokeVoidAsync("setSubscriber","","");
             await AuthenticationStateProvider.Logout();
-
-            NavigationManager.NavigateTo("/");
+            NavigationManager.NavigateTo("/login");
 
         }
         catch (Exception ex)
