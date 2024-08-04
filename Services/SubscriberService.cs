@@ -174,11 +174,6 @@ namespace blazor_giftcard.Services
                     };
                     var histories = JsonSerializer.Deserialize<List<SubscriberHistory>>(historiesElement.GetRawText(), options);
                     _logger.LogInformation($"Successfully retrieved history for subscriber ID {idSubscriber}.");
-                    Console.WriteLine(historiesElement);
-                    foreach (var history in histories)
-                    {
-                        Console.WriteLine(history.Id);
-                    }
                     return histories;
                 }
             }
