@@ -7,7 +7,7 @@
 @inject IJSRuntime JSRuntime
 @rendermode InteractiveServer
 @inject CustomAuthenticationStateProvider AuthenticationStateProvider
-@inject NavigationManager NavigationManager
+@inject NavigationManager Navigation
 @inject UserContextService UserContext
 @inject SubscriberService SS
 @inject NotificationService Notification
@@ -76,6 +76,7 @@ private async Task RegisterBeneficiary()
             await SS.RegisterBeneficiaryAsync(UserContext.Subscriber.Id,beneficiary);
             Notification.Notify($"L'enregistrement s'est déroulée avec succès", "success");
             beneficiary=new BeneficiaryDto();
+            StateHasChanged();
 
           }
         catch (Exception ex)

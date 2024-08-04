@@ -158,14 +158,29 @@ namespace blazor_giftcard.Services
 
 
 
-        public async Task<List<SubscriberHistory>> GetSubscriberHistoriesAsync(string token, int idSubscriber)
+        public async Task<List<SubscriberHistory>> GetSubscriberHistoriesAsync(int idSubscriber)
         {
             try
             {
                 _logger.LogInformation($"Getting history for subscriber ID {idSubscriber}.");
-                var response = await _authClient.GetFromJsonAsync<List<SubscriberHistory>>($"history/{idSubscriber}");
-                _logger.LogInformation($"Successfully retrieved history for subscriber ID {idSubscriber}.");
-                return response;
+                var response = await _authClient.GetStringAsync($"Subscriber/history/{idSubscriber}");
+                using (var document = JsonDocument.Parse(response))
+                {
+                    var root = document.RootElement;
+                    var historiesElement = root.GetProperty("$values");
+                    var options = new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    };
+                    var histories = JsonSerializer.Deserialize<List<SubscriberHistory>>(historiesElement.GetRawText(), options);
+                    _logger.LogInformation($"Successfully retrieved history for subscriber ID {idSubscriber}.");
+                    Console.WriteLine(historiesElement);
+                    foreach (var history in histories)
+                    {
+                        Console.WriteLine(history.Id);
+                    }
+                    return histories;
+                }
             }
             catch (Exception ex)
             {

@@ -41,7 +41,18 @@
         try
         {
             await AuthStateProvider.Login(user.Email, user.Password);
-            Navigation.NavigateTo("/view/package");
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            var current_user = authState.User;
+            var role  = current_user.FindFirst("role")?.Value ?? "";
+            if (role=="SUBSCRIBER")
+            {
+                Navigation.NavigateTo("/view/package");
+            }
+            else if (role=="ADMIN")
+            {
+                Navigation.NavigateTo("/view/user");
+            }
+
         }
         catch (HttpRequestException ex)
         {

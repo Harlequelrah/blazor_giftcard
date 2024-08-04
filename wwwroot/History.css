@@ -1,0 +1,74 @@
+/* Style pour le conteneur principal du tableau */
+.history-container {
+    width: 80%;
+    margin: 2rem auto;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 20px;
+    border-left: 1px solid rgba(255, 255, 255, 0.3);
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    -moz-backdrop-filter: blur(10px);
+    box-shadow: 20px 20px 40px -6px rgba(0, 0, 0, 0.2);
+    padding: 2rem;
+}
+
+/* Style pour le tableau */
+.history-table {
+    width: 100%;
+    border-collapse: separate; /* Change collapse to separate to handle individual border styling */
+    border-spacing: 0; /* Remove spacing between cells */
+    margin: 1rem 0;
+}
+
+/* Style pour les en-têtes du tableau */
+.history-table th {
+    background: linear-gradient(45deg, #fc466b, #3f5efb);
+    color: white;
+    padding: 1rem;
+    text-align: center;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    border-top: 1px solid #fc466b; /* Bordure horizontale supérieure */
+    border-bottom: 1px solid #fc466b; /* Bordure horizontale inférieure */
+    border-left: 1px solid #3f5efb; /* Bordure verticale gauche */
+    border-right: 1px solid #3f5efb; /* Bordure verticale droite */
+}
+
+/* Style pour les lignes du tableau */
+.history-table td {
+    padding: 1rem;
+    border-top: 1px solid #fc466b; /* Bordure horizontale supérieure */
+    border-bottom: 1px solid #fc466b; /* Bordure horizontale inférieure */
+    border-left: 1px solid #3f5efb; /* Bordure verticale gauche */
+    border-right: 1px solid #3f5efb; /* Bordure verticale droite */
+    background: rgba(255, 255, 255, 0.5); /* Fond semi-transparent clair pour les cellules */
+    color: #333; /* Couleur de texte foncé pour assurer une bonne lisibilité */
+    font-weight: 500;
+    text-align: center; /* Centrer le texte dans les cellules */
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.3);
+}
+
+/* Style pour les lignes impaires pour alternance */
+.history-table tr:nth-child(odd) {
+    background: rgba(255, 255, 255, 0.5); /* Fond semi-transparent clair pour les lignes impaires */
+}
+
+/* Style pour les lignes paires pour alternance */
+.history-table tr:nth-child(even) {
+    background: rgba(255, 255, 255, 0.7); /* Fond légèrement plus clair pour les lignes paires */
+}
+
+/* Style pour les liens dans le tableau */
+.history-table a {
+    color: #333;
+    text-decoration: none;
+}
+
+.history-table a:hover {
+    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.history-table a:active {
+    text-shadow: none;
+}

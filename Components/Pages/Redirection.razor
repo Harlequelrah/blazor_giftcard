@@ -28,8 +28,10 @@ protected override async Task OnInitializedAsync()
                 UserContext.Username = user.FindFirst("unique_name")?.Value ?? "";
                 UserContext.Role = user.FindFirst("role")?.Value ?? "";
                 UserContext.Subscriber.IdUser = int.Parse(user.FindFirst("nameid")?.Value ?? "0");
-                Console.WriteLine("Subscriber Id" + UserContext.Subscriber.IdUser);
                 UserContextService.Token= await AuthenticationStateProvider.GetToken();
+                if(UserContext.Role=="SUBSCRIBER")
+                {
+                    Console.WriteLine("Subscriber Id" + UserContext.Subscriber.IdUser);
                 if(UserContext.Subscriber.SubscriberWallet==null)
                 {
                     Console.WriteLine("Getting Subscriber");
@@ -38,6 +40,7 @@ protected override async Task OnInitializedAsync()
                 if(UserContext.Subscriber.SubscriberWallet!=null)
                 {
                     await JS.InvokeVoidAsync("setSubscriber",UserContext.Subscriber.SubscriberName,$"{UserContext.Subscriber.SubscriberWallet.Solde} {@UserContext.Subscriber.SubscriberWallet.Devise}");
+                }
                 }
                 if (user.Identity.IsAuthenticated)
                 {

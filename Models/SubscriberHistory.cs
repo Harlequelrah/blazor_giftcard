@@ -11,15 +11,8 @@ namespace blazor_giftcard.Models
 
         public string Date { get; set; }
         public int IdSubscriber { get; set; }
-        public SubscriberActions Action { get; set; }
+        public string  Action { get; set; }
 
-        public enum SubscriberActions
-        {
-            Initial,
-            Enregistrement,
-            Souscription,
-            PackageExpiration,
-        }
 
     }
 

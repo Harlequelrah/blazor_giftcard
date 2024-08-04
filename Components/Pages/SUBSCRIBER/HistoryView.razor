@@ -1,0 +1,100 @@
+@page "/view/history"
+@using blazor_giftcard.Services
+@using blazor_giftcard.Models
+@inject NotificationService NotificationService
+@inject SubscriberService SS
+@inject UserContextService UserContext
+<head>
+<link rel="stylesheet" href="History.css" />
+</head>
+<PageTitle>Historique</PageTitle>
+<h3>Historique des Abonnés</h3>
+<div class="history-container">
+    <table class="history-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Action</th>
+                <th>Montant</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var history in Historiques)
+            {
+                <tr>
+                    <td>@history.Id</td>
+                    <td>@history.Action</td>
+                    <td>@history.Montant</td>
+                    <td>@history.Date</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<Redirection Url="view/history" />
+@code
+{
+    private List<SubscriberHistory> Histories =new List<SubscriberHistory>();
+    private List<Historique> Historiques =new List<Historique>();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await LoadHistories();
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadHistories()
+    {
+
+        try
+        {
+            if(UserContext.Subscriber.Id!=0)
+            {
+                Histories = await SS.GetSubscriberHistoriesAsync(UserContext.Subscriber.Id);
+                Historiques = await FormatHistory(Histories);
+            }
+            else{
+                NotificationService.Notify("Souscripteur introuvable", "error");
+            }
+
+
+        }
+                catch (Exception ex)
+        {
+            NotificationService.Notify("Error retrieving histories", "error");
+            Console.WriteLine($"Error loading histories: {ex.Message}");
+        }
+    }
+    private async Task<List<Historique>> FormatHistory(List<SubscriberHistory> histories)
+        {
+            List<Historique> historiques = new List<Historique>();
+
+            for (int i = 0; i < histories.Count; i++)
+            {
+                Historique historique = new Historique
+                {
+                    Id = i + 1, // Id starting from 1
+                    Action = histories[i].Action,
+                    Date = histories[i].Date,
+                    Montant = histories[i].Montant
+                };
+
+                historiques.Add(historique);
+            }
+
+            return await Task.FromResult(historiques);
+        }
+    public sealed class Historique
+    {
+        public int Id { get; set;}
+        public string Action { get; set;}
+        public string Date { get; set;}
+        public double Montant { get; set;}
+    }
+
+
+}
