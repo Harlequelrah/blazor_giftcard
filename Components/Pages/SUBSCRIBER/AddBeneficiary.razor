@@ -56,7 +56,7 @@
 <Redirection Url="@RedirectUrl" />
 
 @code {
-
+private double Montant = -1.0;
 [Parameter]
 public  int IdSubscription {get; set;}
 [SupplyParameterFromForm]
@@ -71,13 +71,23 @@ private async Task RegisterBeneficiary()
         var confirm =  await JSRuntime.InvokeAsync<bool>("confirm","Souhaitez vous enregistrer ce beneficiaire?");
         if (confirm)
         {
+        var input = await JSRuntime.InvokeAsync<string>("prompt", "Entrer un  montant utiliser le montant de base:");
+
+        if (double.TryParse(input, out double number))
+        {
+            Montant = number;
+        }
+
           try
           {
-            await SS.RegisterBeneficiaryAsync(UserContext.Subscriber.Id,beneficiary);
+            await SS.RegisterBeneficiaryAsync(UserContext.Subscriber.Id,Montant,beneficiary);
             Notification.Notify($"L'enregistrement s'est déroulée avec succès", "success");
             beneficiary=new BeneficiaryDto();
-            StateHasChanged();
-
+            UserContext.Subscriber= await UserContext.GetSubscriberAsync(UserContext.Subscriber.IdUser);
+            if(UserContext.Subscriber.SubscriberWallet!=null)
+                {
+                    await JSRuntime.InvokeVoidAsync("setSubscriber",UserContext.Subscriber.SubscriberName,$"{UserContext.Subscriber.SubscriberWallet.Solde} {@UserContext.Subscriber.SubscriberWallet.Devise}");
+                }
           }
         catch (Exception ex)
         {

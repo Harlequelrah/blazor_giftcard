@@ -21,7 +21,7 @@ namespace blazor_giftcard.Models
         public class Beneficiary
         {
                 public int Id { get; set; }
-                public int IdUser { get; set; }
+                public int? IdUser { get; set; }
 
                 public int IdSubscriber { get; set; }
 

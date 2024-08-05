@@ -1,5 +1,5 @@
 /* Style pour le conteneur principal du tableau */
-.history-container {
+.listview-container {
     width: 80%;
     margin: 2rem auto;
     background: rgba(255, 255, 255, 0.3);
@@ -14,7 +14,7 @@
 }
 
 /* Style pour le tableau */
-.history-table {
+.listview-table {
     width: 100%;
     border-collapse: separate; /* Change collapse to separate to handle individual border styling */
     border-spacing: 0; /* Remove spacing between cells */
@@ -24,7 +24,7 @@
 }
 
 /* Style pour les en-têtes du tableau */
-.history-table th {
+.listview-table th {
     padding: 1rem;
     text-align: center;
     font-weight: bold;
@@ -36,7 +36,7 @@
 }
 
 /* Style pour les cellules du tableau */
-.history-table td {
+.listview-table td {
     padding: 1rem;
     font-weight: 500;
     text-align: center; /* Centrer le texte dans les cellules */
@@ -48,25 +48,25 @@
 }
 
 /* Style pour les lignes impaires pour alternance */
-.history-table tr:nth-child(odd) {
+.listview-table tr:nth-child(odd) {
     background: rgba(255, 255, 255, 0.1); /* Fond légèrement transparent pour les lignes impaires */
 }
 
 /* Style pour les lignes paires pour alternance */
-.history-table tr:nth-child(even) {
+.listview-table tr:nth-child(even) {
     background: rgba(255, 255, 255, 0.2); /* Fond légèrement plus clair pour les lignes paires */
 }
 
 /* Style pour les liens dans le tableau */
-.history-table a {
+.listview-table a {
     color: #fff; /* Couleur de texte blanche pour les liens dans les cellules */
     text-decoration: none;
 }
 
-.history-table a:hover {
+.listview-table a:hover {
     text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.4);
 }
 
-.history-table a:active {
+.listview-table a:active {
     text-shadow: none;
 }

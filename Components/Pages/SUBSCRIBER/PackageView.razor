@@ -93,6 +93,11 @@ var input = await JSRuntime.InvokeAsync<string>("prompt", "Entrer le montant:");
         try{
             await SS.PostSubscriptionAsync(packageId, Montant,UserContext.Subscriber.Id);
             NotificationService.Notify($"Votre souscription s'est déroulée avec succès", "success");
+            UserContext.Subscriber= await UserContext.GetSubscriberAsync(UserContext.Subscriber.IdUser);
+            if(UserContext.Subscriber.SubscriberWallet!=null)
+                {
+                    await JSRuntime.InvokeVoidAsync("setSubscriber",UserContext.Subscriber.SubscriberName,$"{UserContext.Subscriber.SubscriberWallet.Solde} {@UserContext.Subscriber.SubscriberWallet.Devise}");
+                }
             Navigation.NavigateTo("/view/subscription");
 
         }
