@@ -1,0 +1,14 @@
+.toast-container {
+    position: fixed;
+    top: 18%; /* Positionner verticalement au centre */
+    left: 57%; /* Positionner horizontalement au centre */
+    transform: translate(-50%, -50%);
+}
+
+.toast {
+    font-family: Arial, sans-serif;
+    border-radius: 10px;
+    padding: 10px;
+    /* background: rgba(0, 0, 0, 0.8);  Exemple de fond sombre
+    color: #fff; Exemple de texte blanc */
+}

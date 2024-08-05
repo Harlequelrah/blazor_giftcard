@@ -1,97 +1,97 @@
 body {
-    background: linear-gradient(45deg, #fc466b, #3f5efb);
-    font-family: Arial, sans-serif;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    margin: 0;
+  background: linear-gradient(45deg, #b3cde0, #006994);
+  font-family: Arial, sans-serif;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  margin: 0;
 }
 
 .container {
-    position: relative;
-    width: 80%;
-    margin: 0 auto;
+  position: relative;
+  width: 80%;
+  margin: 0 auto;
 }
 
 .row {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-around;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
 }
 
 .drop {
-    background: rgba(255, 255, 255, 0.3);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border-radius: 10px;
-    box-shadow: 10px 10px 60px -8px rgba(0, 0, 0, 0.2);
-    transition: all 0.2s ease;
-    z-index: 1;
-    margin: 25px;
-    padding: 20px;
-    width: 300px; /* Définir une largeur fixe de 300 pixels */
-    height: 300px; /* Définir une hauteur fixe de 300 pixels */
-    text-align: center;
-    position: relative;
-    border: 3px solid;
-    border-image: linear-gradient(90deg, #FA4B37, #DF2771);
-    border-image-slice: 1;
-    animation: border-gradient 5s linear infinite;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 10px;
+  box-shadow: 10px 10px 60px -8px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+  z-index: 1;
+  margin: 25px;
+  padding: 20px;
+  width: 300px; /* Définir une largeur fixe de 300 pixels */
+  height: 300px; /* Définir une hauteur fixe de 300 pixels */
+  text-align: center;
+  position: relative;
+  border: 3px solid;
+  border-image: linear-gradient(90deg, #0073e6, #00aaff); /* Dégradé de bleu pour les bordures */
+  border-image-slice: 1;
+  animation: border-gradient 5s linear infinite;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .drop h2 {
-    margin-top: 0;
-    font-size: 1.5rem; /* Ajuster la taille du texte */
-    color: #FA4B37;
+  margin-top: 0;
+  font-size: 1.5rem; /* Ajuster la taille du texte */
+  color: #0073e6; /* Bleu pour le titre */
 }
 
 .drop p {
-    color: white;
-    font-weight: 500;
-    opacity: 0.9;
-    font-size: 1rem; /* Ajuster la taille du texte */
-    margin-bottom: 0.5rem;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  color: #fff; /* Texte blanc pour le contraste */
+  font-weight: 500;
+  opacity: 0.9;
+  font-size: 1rem; /* Ajuster la taille du texte */
+  margin-bottom: 0.5rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .drop .price {
-    font-weight: bold;
-    border-top: 2px solid #FA4B37;
-    padding-top: 10px;
-    margin-top: auto; /* Pousser le prix vers le bas */
-    color: #FA4B37;
+  font-weight: bold;
+  border-top: 2px solid #0073e6; /* Bordure bleue pour le prix */
+  padding-top: 10px;
+  margin-top: auto; /* Pousser le prix vers le bas */
+  color: #0073e6; /* Bleu pour le prix */
 }
 
 button {
-    background: linear-gradient(to right, #FA4B37, #DF2771);
-    color: white;
-    border-radius: 8px;
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-    font-size: 1rem;
-    margin-top: 10px;
+  background: linear-gradient(to right, #e0e0e0, #b3b3b3); /* Fond de bouton gris neutre */
+  color: #fff; /* Texte blanc pour le bouton */
+  border-radius: 8px;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 1rem;
+  margin-top: 10px;
 }
 
 button:hover {
-    background: linear-gradient(to right, #DF2771, #FA4B37);
+  background: linear-gradient(to right, #00aaff, #0073e6); /* Dégradé de bleu pour le bouton au survol */
 }
 
 button:focus {
-    outline: none;
+  outline: none;
 }
 
 @keyframes border-gradient {
-    0% {
-        border-image: linear-gradient(90deg, #FA4B37, #DF2771);
-    }
-    50% {
-        border-image: linear-gradient(270deg, #FA4B37, #DF2771);
-    }
-    100% {
-        border-image: linear-gradient(90deg, #FA4B37, #DF2771);
-    }
+  0% {
+    border-image: linear-gradient(90deg, #0073e6, #00aaff); /* Dégradé de bleu pour les bordures */
+  }
+  50% {
+    border-image: linear-gradient(270deg, #0073e6, #00aaff); /* Dégradé de bleu pour les bordures */
+  }
+  100% {
+    border-image: linear-gradient(90deg, #0073e6, #00aaff); /* Dégradé de bleu pour les bordures */
+  }
 }

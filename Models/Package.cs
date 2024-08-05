@@ -11,7 +11,6 @@ namespace blazor_giftcard.Models
         public double Budget{ get; set; }
         public double Prix {get; set; }
 
-        public int? MaxCarte{ get; set; }
         public double MontantBase { get; set; }
         public string Description { get; set; }
     }

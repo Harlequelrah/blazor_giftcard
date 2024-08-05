@@ -5,6 +5,7 @@
 @inject SubscriberService SS
 @inject NavigationManager Navigation
 @inject IJSRuntime JSRuntime
+@inject ToastrService Notify
 @inject CustomAuthenticationStateProvider CAST
 @inject UserContextService UserContext
 <head>
@@ -33,7 +34,6 @@
                     <p>Jours : @(package.NbrJour.HasValue ? package.NbrJour.ToString() : "Illimité")</p>
                     <p>Budget : @package.Budget €</p>
                     <p class="price">Prix : @package.Prix €</p>
-                    <p>Max Cartes : @(package.MaxCarte.HasValue ? package.MaxCarte.ToString() : "Illimité")</p>
                     <p>Montant de Base : @package.MontantBase €</p>
                     <button @onclick="() => Souscrire(package.Id)">Souscrire</button>
                 </div>
@@ -49,16 +49,17 @@
     private List<Package> Packages =new List<Package>();
    protected override async Task OnInitializedAsync()
 {
-    //await LoadPackages();
+    await Task.Delay(200);
+    await LoadPackages();
 }
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await LoadPackages();
-            StateHasChanged();
-        }
-    }
+    //protected override async Task OnAfterRenderAsync(bool firstRender)
+    //{
+    //    if (firstRender)
+    //    {
+    //        await LoadPackages();
+    //        StateHasChanged();
+    //    }
+    //}
 
     private async Task LoadPackages()
     {
@@ -92,7 +93,8 @@ var input = await JSRuntime.InvokeAsync<string>("prompt", "Entrer le montant:");
         }
         try{
             await SS.PostSubscriptionAsync(packageId, Montant,UserContext.Subscriber.Id);
-            NotificationService.Notify($"Votre souscription s'est déroulée avec succès", "success");
+            //NotificationService.Notify($"Votre souscription s'est déroulée avec succès", "success");
+            Notify.Success($"Votre souscription s'est déroulée avec succès", "success");
             UserContext.Subscriber= await UserContext.GetSubscriberAsync(UserContext.Subscriber.IdUser);
             if(UserContext.Subscriber.SubscriberWallet!=null)
                 {

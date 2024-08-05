@@ -1,21 +1,18 @@
-.loginlink{
-    display:inline;
+.loginlink {
+    display: inline;
     /* visibility: hidden; */
 }
 #logoutlink {
-    display:none;
+    display: none;
 }
-#profil{
-    display:none;
+#profil {
+    display: none;
 }
-
 
 .page {
     display: flex;
     flex-direction: row;
     min-height: 100vh;
-
-
 }
 
 .content-wrapper {
@@ -29,21 +26,26 @@ main {
 }
 
 .footer {
-    background-color: #000000;
+    background-color: #333333; /* Gris foncé pour une apparence élégante */
     max-height: 400px;
+    
 }
 
 a {
-    width:auto;
-    border-radius:8px;
-    background: linear-gradient(to right, #FA4B37, #DF2771);
-    color: rgba(0,0,0);
+    width: auto;
+    border-radius: 5px;
+    background: linear-gradient(to right, #e0e0e0, #b3b3b3); /* Dégradé de blanc à gris */
+    color: #000000; /* Texte noir pour contraste */
     font-size: 16px;
+    text-decoration: none; /* Supprimer la décoration de texte par défaut */
+}
 
+a:hover {
+    text-decoration: underline; /* Ajouter une décoration de texte au survol pour indication visuelle */
 }
 
 .sidebar {
-    background: linear-gradient(to right, #FA4B37, #DF2771);
+    background: linear-gradient(to right, #e0e0e0, #b3b3b3); /* Dégradé de blanc à gris pour la barre latérale */
 }
 
 .top-row {
@@ -107,7 +109,7 @@ a {
 }
 
 #blazor-error-ui {
-    background: lightyellow;
+    background: lightgray; /* Remplacer lightyellow par lightgray pour une couleur plus neutre */
     bottom: 0;
     box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
     display: none;

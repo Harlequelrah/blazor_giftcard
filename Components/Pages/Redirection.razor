@@ -20,8 +20,15 @@
 
 protected override async Task OnInitializedAsync()
 {
-    _locationChangedHandler = Navigation.RegisterLocationChangingHandler(OnLocationChanging);
-    try
+
+
+}
+ protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _locationChangedHandler = Navigation.RegisterLocationChangingHandler(OnLocationChanging);
+            try
             {
                 var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
                 var user = authState.User;
@@ -66,12 +73,6 @@ protected override async Task OnInitializedAsync()
                 NotificationService.Notify($"Error retrieving packages: {ex.Message}", "error");
                 Console.WriteLine($"Exception lors de l'initialisation du profil : {ex}");
             }
-
-}
- protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
 
 
 

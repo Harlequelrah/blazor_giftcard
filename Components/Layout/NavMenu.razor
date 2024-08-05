@@ -1,5 +1,5 @@
 ﻿<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
+    <div class="container-fluid" onclick="return false;">
         <a class="navbar-brand" href="#">GOCHAP GIFT CARD </a>
     </div>
 </div>
@@ -10,12 +10,18 @@
     <nav class="flex-column" >
         <div class="subscriber nav-item px-3">
             <NavLink class="nav-link" href="#"  onclick="return false;">
-                <span class="bi bi-person-fill fs-4" aria-hidden="true"></span>Nom : <span id="NomSubscriber"></span>
+                <span class="bi bi-person-fill fs-4" aria-hidden="true"></span>
+                <div id="NomSub">
+                Nom : <span id="NomSubscriber"></span>
+                </div>
             </NavLink>
         </div>
         <div class="subscriber nav-item px-3">
             <NavLink class="nav-link" href="#" onclick="return false;">
-                <span class="bi bi-credit-card fs-4" aria-hidden="true"></span>Budget : <span id="BudgetSubscriber"></span>
+                <span class="bi bi-credit-card fs-4" aria-hidden="true"></span>
+                <div id="BudgetSub">
+                Budget : <span id="BudgetSubscriber"></span>
+                </div>
             </NavLink>
         </div>
         <div class="nav-item px-3">
@@ -26,22 +32,22 @@
 
         <div class="subscriber nav-item px-3">
             <NavLink class="nav-link" href="view/subscription">
-                <span class="bi bi-list fs-4" aria-hidden="true"></span> Voir Mes Souscriptions
+                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Voir Mes Souscriptions
             </NavLink>
         </div>
         <div class="subscriber nav-item px-3">
             <NavLink class="nav-link" href="view/package">
-                <span class="bi bi-list fs-4" aria-hidden="true"></span> Voir les Packages
+                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> <span class="credential">Voir les Packages</span>
             </NavLink>
         </div>
         <div class="subscriber nav-item px-3">
             <NavLink class="nav-link" href="view/beneficiary">
-                <span class="bi bi-list fs-4" aria-hidden="true"></span>Liste des beneficiaires
+                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span>Liste des beneficiaires
             </NavLink>
         </div>
                 <div class="subscriber nav-item px-3">
             <NavLink class="nav-link" href="view/history">
-                <span class="bi bi-list fs-4" aria-hidden="true"></span>Consulter Mon Historique
+                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span>Consulter Mon Historique
             </NavLink>
         </div>
 
