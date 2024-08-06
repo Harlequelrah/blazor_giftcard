@@ -19,11 +19,14 @@
             UserContextService.Token= "";
             await JS.InvokeVoidAsync("setSubscriber","","");
             await AuthenticationStateProvider.Logout();
+            Notify.Info("Vous êtes maintenant déconnecté","Information");
+            await Task.Delay(200);
             NavigationManager.NavigateTo("/login");
 
         }
         catch (Exception ex)
         {
+            Notify.Error("Erreur lors de la déconnexion","Error");
             errorMessage = $"Erreur lors de la déconnexion : {ex.Message}";
             Console.WriteLine($"Exception lors de la déconnexion : {ex}");
         }

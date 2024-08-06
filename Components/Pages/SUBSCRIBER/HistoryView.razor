@@ -1,14 +1,14 @@
 @page "/view/history"
 @using blazor_giftcard.Services
 @using blazor_giftcard.Models
-@inject NotificationService NotificationService
+@inject ToastrService Notify
 @inject SubscriberService SS
 @inject UserContextService UserContext
 <head>
 <link rel="stylesheet" href="ListView.css" />
 </head>
 <PageTitle>Historique</PageTitle>
-<h3 style="text-align:center;text-decoration:underline">Historique</h3>
+<h3>Historique</h3>
 <div class="listview-container">
     <table class="listview-table">
         <thead>
@@ -58,14 +58,14 @@
                 Historiques = await FormatHistory(Histories);
             }
             else{
-                NotificationService.Notify("Souscripteur introuvable", "error");
+                Notify.Error("Souscripteur introuvable", "ERREUR");
             }
 
 
         }
                 catch (Exception ex)
         {
-            NotificationService.Notify("Error retrieving histories", "error");
+            Notify.Error("Error retrieving histories", "error");
             Console.WriteLine($"Error loading histories: {ex.Message}");
         }
     }

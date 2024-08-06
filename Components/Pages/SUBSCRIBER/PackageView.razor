@@ -1,22 +1,24 @@
 @page "/view/package"
 @using blazor_giftcard.Services
 @using blazor_giftcard.Models
-@inject NotificationService NotificationService
+@inject ToastrService Notify
 @inject SubscriberService SS
 @inject NavigationManager Navigation
 @inject IJSRuntime JSRuntime
-@inject ToastrService Notify
 @inject CustomAuthenticationStateProvider CAST
 @inject UserContextService UserContext
+
 <head>
-<link rel="stylesheet" href="View.css" />
+    <link rel="stylesheet" href="View.css" />
 </head>
+
 <PageTitle>Packages</PageTitle>
+
 <div class="container">
     @if (Packages == null)
     {
         <div class="drop col-md-3">
-        <p>Loading...</p>
+            <p>Loading...</p>
         </div>
     }
     else if (Packages.Count == 0)
@@ -35,53 +37,64 @@
                     <p>Budget : @package.Budget €</p>
                     <p class="price">Prix : @package.Prix €</p>
                     <p>Montant de Base : @package.MontantBase €</p>
-                    <button @onclick="() => Souscrire(package.Id)">Souscrire</button>
+                    <button @onclick="() => ShowConfirmModal(package.Id)">Souscrire</button>
                 </div>
             }
         </div>
     }
 </div>
+
+<ConfirmDeleteModal Title="Confirmation" OnConfirm="HandleConfirm">
+    <p>Souhaitez-vous définir un montant par carte?</p>
+</ConfirmDeleteModal>
+
+<GenericInputModal Title="Entrer un montant" InputLabel="Montant" OnSubmit="HandleModalSubmit" />
+
 <Redirection Url="view/package" />
 
 @code
 {
     private double? Montant;
-    private List<Package> Packages =new List<Package>();
-   protected override async Task OnInitializedAsync()
-{
-    await Task.Delay(200);
-    await LoadPackages();
-}
-    //protected override async Task OnAfterRenderAsync(bool firstRender)
-    //{
-    //    if (firstRender)
-    //    {
-    //        await LoadPackages();
-    //        StateHasChanged();
-    //    }
-    //}
+    private int packageIdToSubscribe;
+    private List<Package> Packages = new List<Package>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Delay(200);
+        await LoadPackages();
+    }
 
     private async Task LoadPackages()
     {
-
         try
         {
             Packages = await SS.GetPackagesAsync();
         }
-                catch (Exception ex)
+        catch (Exception ex)
         {
-            NotificationService.Notify($"Error retrieving packages: {ex.Message}", "error");
+            Notify.Error($"Error retrieving packages: {ex.Message}", "ERROR");
             Console.WriteLine($"Error loading Packages: {ex.Message}");
         }
     }
-    private async Task  Souscrire(int packageId)
+
+    private void ShowConfirmModal(int packageId)
     {
-        var confirm =  await JSRuntime.InvokeAsync<bool>("confirm","Souhaitez vous definir un montant par carte?");
-        if (confirm)
+        packageIdToSubscribe = packageId;
+        JSRuntime.InvokeVoidAsync("showModal", "confirmModal");
+    }
+
+    private async Task HandleConfirm(bool confirmed)
+    {
+        JSRuntime.InvokeVoidAsync("hideModal", "confirmModal");
+        if (confirmed)
         {
+            await JSRuntime.InvokeVoidAsync("showModal", "genericInputModal");
+        }
+    }
 
-var input = await JSRuntime.InvokeAsync<string>("prompt", "Entrer le montant:");
-
+    private async Task HandleModalSubmit(string input)
+    {
+        JSRuntime.InvokeVoidAsync("hideModal", "genericInputModal");
         if (double.TryParse(input, out double number))
         {
             Montant = number;
@@ -90,25 +103,22 @@ var input = await JSRuntime.InvokeAsync<string>("prompt", "Entrer le montant:");
         {
             Montant = null;
         }
-        }
-        try{
-            await SS.PostSubscriptionAsync(packageId, Montant,UserContext.Subscriber.Id);
-            //NotificationService.Notify($"Votre souscription s'est déroulée avec succès", "success");
-            Notify.Success($"Votre souscription s'est déroulée avec succès", "success");
-            UserContext.Subscriber= await UserContext.GetSubscriberAsync(UserContext.Subscriber.IdUser);
-            if(UserContext.Subscriber.SubscriberWallet!=null)
-                {
-                    await JSRuntime.InvokeVoidAsync("setSubscriber",UserContext.Subscriber.SubscriberName,$"{UserContext.Subscriber.SubscriberWallet.Solde} {@UserContext.Subscriber.SubscriberWallet.Devise}");
-                }
-            Navigation.NavigateTo("/view/subscription");
 
+        try
+        {
+            await SS.PostSubscriptionAsync(packageIdToSubscribe, Montant, UserContext.Subscriber.Id);
+            Notify.Success("Votre souscription s'est déroulée avec succès", "SUCCESS");
+            UserContext.Subscriber = await UserContext.GetSubscriberAsync(UserContext.Subscriber.IdUser);
+            if (UserContext.Subscriber.SubscriberWallet != null)
+            {
+                await JSRuntime.InvokeVoidAsync("setSubscriber", UserContext.Subscriber.SubscriberName, $"{UserContext.Subscriber.SubscriberWallet.Solde} {UserContext.Subscriber.SubscriberWallet.Devise}");
+            }
+            Navigation.NavigateTo("/view/subscription");
         }
         catch (Exception ex)
         {
-            NotificationService.Notify($"Error subscription {ex.Message}", "error");
-            Console.WriteLine($"Error subscripting Package {packageId} {ex.Message}");
+            Notify.Error("Erreur lors de la souscription", "ERROR");
+            Console.WriteLine($"Error subscribing to Package {packageIdToSubscribe}: {ex.Message}");
         }
-
     }
-
 }

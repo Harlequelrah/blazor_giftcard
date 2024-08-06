@@ -3,10 +3,11 @@
 @using blazor_giftcard.Services
 @using Microsoft.AspNetCore.Components.Forms
 @inject HttpClient Http
-@using System.ComponentModel.DataAnnotations;
-@using System.ComponentModel.DataAnnotations.Schema;
-@using System.Text.Json.Serialization;
+@using System.ComponentModel.DataAnnotations
+@using System.ComponentModel.DataAnnotations.Schema
+@using System.Text.Json.Serialization
 @inject NavigationManager Navigation
+
 <head>
 
 <link rel="stylesheet" href="Layout.css" />
@@ -67,6 +68,8 @@
         var response = await Http.PostAsJsonAsync("http://localhost:5107/api/User/register/subscriber", user);
         if (response.IsSuccessStatusCode)
         {
+            Notify.Success("Votre enregistrement s'est déroulé avec succès");
+            await Task.Delay(200);
             Navigation.NavigateTo("/login");
         }
         else
@@ -78,6 +81,7 @@
                 {
                     foreach (var errorMessage in error.Value)
                     {
+                        Notify.Error(errorMessage) ;
                         errorMessages.Add(errorMessage); // Add error messages to the list
                     }
                 }

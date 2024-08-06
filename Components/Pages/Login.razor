@@ -3,7 +3,6 @@
 @using Microsoft.AspNetCore.Components.Forms
 @inject CustomAuthenticationStateProvider AuthStateProvider
 @inject NavigationManager Navigation
-@inject NotificationService Notification
 <head>
 
 <link rel="stylesheet" href="Layout.css" />
@@ -46,22 +45,26 @@
             var role  = current_user.FindFirst("role")?.Value ?? "";
             if (role=="SUBSCRIBER")
             {
+                Notify.Success("Bienvenue cher Souscripteur");
+                await Task.Delay(200);
                 Navigation.NavigateTo("/view/package");
             }
             else if (role=="ADMIN")
             {
+                Notify.Success("Bienvenue cher Admin");
+                await Task.Delay(200);
                 Navigation.NavigateTo("/view/user");
             }
 
         }
         catch (HttpRequestException ex)
         {
-            Notification.Notify("Nom d'utilisateur ou mot de passe incorrect.","error");
+            Notify.Error("Nom d'utilisateur ou mot de passe incorrect.","ERREUR");
             Console.WriteLine($"Login error: {ex.Message}");
         }
         catch (Exception ex)
         {
-            Notification.Notify("Une erreur inconnue s'est produite..","error");
+            Notify.Error("Une erreur inconnue s'est produite..","ERREUR");
             Console.WriteLine($"Unexpected error: {ex.Message}");
         }
     }

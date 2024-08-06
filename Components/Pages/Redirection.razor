@@ -2,7 +2,7 @@
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Authorization
 @using blazor_giftcard.Components.Pages
-@inject NotificationService NotificationService
+@inject ToastrService Notify
 @using blazor_giftcard.Services
 @using blazor_giftcard.Models
 @inject CustomAuthenticationStateProvider AuthenticationStateProvider
@@ -61,7 +61,7 @@ protected override async Task OnInitializedAsync()
             catch (Exception ex)
             {
                 //await JS.InvokeVoidAsync("alert",ErrorMessage);
-                NotificationService.Notify($"Error retrieving packages: {ex.Message}", "error");
+                Notify.Error("Error retrieving packages", "error");
                 Console.WriteLine($"Exception lors de l'initialisation du profil : {ex}");
             }
             try{
@@ -70,7 +70,7 @@ protected override async Task OnInitializedAsync()
             }
             catch (Exception ex)
             {
-                NotificationService.Notify($"Error retrieving packages: {ex.Message}", "error");
+                Notify.Error("Error retrieving packages", "error");
                 Console.WriteLine($"Exception lors de l'initialisation du profil : {ex}");
             }
 

@@ -56,7 +56,6 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorizationCore();
 builder.Services.AddScoped<ToastrService>();
-builder.Services.AddScoped<NotificationService>();
 builder.Services.AddScoped<UserContextService>();
 builder.Services.AddScoped<SubscriberService>();
 

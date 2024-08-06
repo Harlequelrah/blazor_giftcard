@@ -1,7 +1,7 @@
 @page "/view/subscription"
 @using blazor_giftcard.Services
 @using blazor_giftcard.Models
-@inject NotificationService NotificationService
+@inject ToastrService Notify
 @inject SubscriberService SS
 @inject NavigationManager Navigation
 @inject IJSRuntime JSRuntime
@@ -66,12 +66,12 @@
             {
                 Subscriptions = await SS.GetSubscriptionsBySubscriberAsync(UserContext.Subscriber.Id);
             }
-            else  NotificationService.Notify($"le souscripteur est introuvable", "error");
+            else  Notify.Error($"le souscripteur est introuvable", "Erreur");
 
         }
                 catch (Exception ex)
         {
-            NotificationService.Notify($"Error retrieving subscriptions: {ex.Message}", "error");
+            Notify.Error("Error retrieving subscriptions", "Erreur");
             Console.WriteLine($"Error loading Subscriptions: {ex.Message}");
         }
     }

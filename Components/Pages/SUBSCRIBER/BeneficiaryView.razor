@@ -1,7 +1,7 @@
 @page "/view/beneficiary"
 @using blazor_giftcard.Services
 @using blazor_giftcard.Models
-@inject NotificationService NotificationService
+@inject ToastrService Notify
 @inject SubscriberService SS
 @inject NavigationManager Navigation
 @inject IJSRuntime JSRuntime
@@ -13,7 +13,7 @@
 <link rel="stylesheet" href="ListView.css" />
 </head>
 <PageTitle>Beneficiaries</PageTitle>
-<h3 style="text-align:center;text-decoration:underline">Liste des Beneficiaires</h3>
+<h3>Liste des Beneficiaires</h3>
 <div class="listview-container">
     @if (Beneficiaries == null)
     {
@@ -88,12 +88,12 @@
                 Beneficiaries = await SS.GetSubscriberBeneficiariesAsync(UserContext.Subscriber.Id);
                 beneficiaries = await FormatBeneficiary(Beneficiaries);
             }
-            else  NotificationService.Notify($"le souscripteur est introuvable", "error");
+            else  Notify.Error($"le souscripteur est introuvable", "Erreur");
 
         }
                 catch (Exception ex)
         {
-            NotificationService.Notify($"Error retrieving beneficiaries: {ex.Message}", "error");
+            Notify.Error($"Error retrieving beneficiaries", "Erreur");
             Console.WriteLine($"Error loading Beneficiaries: {ex.Message}");
         }
     }

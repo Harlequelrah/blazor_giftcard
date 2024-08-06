@@ -10,7 +10,7 @@
 @inject NavigationManager Navigation
 @inject UserContextService UserContext
 @inject SubscriberService SS
-@inject NotificationService Notification
+@inject ToastrService Notify
 
 <head>
 
@@ -53,6 +53,11 @@
   <div class="drop drop-4"></div>
   <div class="drop drop-5"></div>
 </div>
+<ConfirmDeleteModal Title="Confirmation" OnConfirm="HandleConfirm">
+    <p>Souhaitez-vous enregistrer ce bénéficiaire?</p>
+</ConfirmDeleteModal>
+
+<GenericInputModal Title="Entrer un montant" InputLabel="Montant" OnSubmit="HandleModalSubmit" />
 <Redirection Url="@RedirectUrl" />
 
 @code {
@@ -66,39 +71,46 @@ private string RedirectUrl => $"add/beneficiary/{IdSubscription}";
 
 
 private async Task RegisterBeneficiary()
-{
+    {
         beneficiary.IdSubscription = IdSubscription;
-        var confirm =  await JSRuntime.InvokeAsync<bool>("confirm","Souhaitez vous enregistrer ce beneficiaire?");
-        if (confirm)
-        {
-        var input = await JSRuntime.InvokeAsync<string>("prompt", "Entrer un  montant utiliser le montant de base:");
+        await JSRuntime.InvokeVoidAsync("$('#confirmModal').modal", "show");
+    }
 
+    private async Task HandleConfirm(bool confirmed)
+    {
+        await JSRuntime.InvokeVoidAsync("$('#confirmModal').modal', 'hide");
+        if (confirmed)
+        {
+            await JSRuntime.InvokeVoidAsync("$('#genericInputModal').modal", "show");
+        }
+    }
+
+    private async Task HandleModalSubmit(string input)
+    {
+        await JSRuntime.InvokeVoidAsync("$('#genericInputModal').modal', 'hide");
         if (double.TryParse(input, out double number))
         {
             Montant = number;
-        }
-
-          try
-          {
-            await SS.RegisterBeneficiaryAsync(UserContext.Subscriber.Id,Montant,beneficiary);
-            Notification.Notify($"L'enregistrement s'est déroulée avec succès", "success");
-            beneficiary=new BeneficiaryDto();
-            UserContext.Subscriber= await UserContext.GetSubscriberAsync(UserContext.Subscriber.IdUser);
-            if(UserContext.Subscriber.SubscriberWallet!=null)
+            try
+            {
+                await SS.RegisterBeneficiaryAsync(UserContext.Subscriber.Id, Montant, beneficiary);
+                Notify.Success("L'enregistrement s'est déroulé avec succès", "SUCCESS");
+                beneficiary = new BeneficiaryDto();
+                UserContext.Subscriber = await UserContext.GetSubscriberAsync(UserContext.Subscriber.IdUser);
+                if (UserContext.Subscriber.SubscriberWallet != null)
                 {
-                    await JSRuntime.InvokeVoidAsync("setSubscriber",UserContext.Subscriber.SubscriberName,$"{UserContext.Subscriber.SubscriberWallet.Solde} {@UserContext.Subscriber.SubscriberWallet.Devise}");
+                    await JSRuntime.InvokeVoidAsync("setSubscriber", UserContext.Subscriber.SubscriberName, $"{UserContext.Subscriber.SubscriberWallet.Solde} {UserContext.Subscriber.SubscriberWallet.Devise}");
                 }
-          }
-        catch (Exception ex)
+            }
+            catch (Exception ex)
+            {
+                Notify.Error("Erreur lors de l'enregistrement du bénéficiaire", "ERROR");
+                Console.WriteLine($"Error loading Subscriptions: {ex.Message}");
+            }
+        }
+        else
         {
-            Notification.Notify($"Error lors de l 'enregistrement du beneficiaire","error");
-            Console.WriteLine($"Error loading Subscriptions: {ex.Message}");
+            Notify.Error("Montant invalide", "ERROR");
         }
-
-        }
-
-
-}
-
-
+    }
 }
