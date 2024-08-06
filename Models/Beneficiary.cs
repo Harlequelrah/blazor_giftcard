@@ -35,7 +35,7 @@ namespace blazor_giftcard.Models
 
                 public bool Has_gochap { get; set; }
 
-                public byte[]? ProfilePhoto { get; set; }
+                public string? ProfilPhoto { get; set; }
 
         }
 }
