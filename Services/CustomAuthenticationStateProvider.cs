@@ -41,6 +41,7 @@ namespace blazor_giftcard.Services
         private string _role;
         private string _userName;
         private bool _tokenStored;
+        private bool _isActive = false;
         private bool _isPrerendering = true;
         private ConcurrentQueue<Func<Task>> _afterRenderActions;
         private readonly IHttpClientFactory _httpClientFactory;
@@ -76,7 +77,7 @@ namespace blazor_giftcard.Services
 
             if (current_user.Identity.IsAuthenticated)
             {
-                if (_role != "ADMIN" && _role != "SUBSCRIBER")
+                if ((_role != "ADMIN" && _role != "SUBSCRIBER") || !_isActive)
                 {
                     _logger.LogInformation("Not Authorized");
                     current_user = new ClaimsPrincipal(new ClaimsIdentity());
@@ -173,6 +174,9 @@ namespace blazor_giftcard.Services
                 current_user = new ClaimsPrincipal(identity);
                 _role = current_user.FindFirst("role")?.Value ?? "";
                 _userName = current_user.FindFirst("unique_name")?.Value ?? "";
+                var isActiveClaim = current_user.Claims.FirstOrDefault(c => c.Type == "IsActive")?.Value;
+                _isActive = bool.Parse(isActiveClaim);
+
 
                 await SecureToken();
 
@@ -195,6 +199,8 @@ namespace blazor_giftcard.Services
                 _logger.LogInformation("Logging out user...");
                 _token = null;
                 _role = null;
+                _isActive = false;
+
                 await SecureToken();
                 _logger.LogInformation("User logged out successfully.");
 
