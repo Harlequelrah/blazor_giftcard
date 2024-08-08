@@ -7,6 +7,7 @@
 @inject IJSRuntime JSRuntime
 @inject CustomAuthenticationStateProvider CAST
 @inject UserContextService UserContext
+@rendermode InteractiveServer
 
 <head>
     <link rel="stylesheet" href="View.css" />
@@ -44,11 +45,11 @@
     }
 </div>
 
-<ConfirmDeleteModal Title="Confirmation" OnConfirm="HandleConfirm">
-    <p>Souhaitez-vous définir un montant par carte?</p>
-</ConfirmDeleteModal>
 
-<GenericInputModal Title="Entrer un montant" InputLabel="Montant" OnSubmit="HandleModalSubmit" />
+
+
+ <ConfirmModal Title="Souhaitez vous definir un montant par carte?" OnConfirm="HandleConfirm" OnClose="CloseConfirmation" />
+ <GenericInputModal Title="Entrer un montant" InputLabel="Montant" OnSubmit="HandleModalSubmit" />
 
 <Redirection Url="view/package" />
 
@@ -61,14 +62,18 @@
     protected override async Task OnInitializedAsync()
     {
         await Task.Delay(200);
+        Console.WriteLine("Recherche de Packages...");
         await LoadPackages();
+        Console.WriteLine("Fin Recherche de Packages...");
     }
 
     private async Task LoadPackages()
     {
         try
         {
+            Console.WriteLine("Debut Recherche de Packages...");
             Packages = await SS.GetPackagesAsync();
+            Console.WriteLine("termine de recherche de Packages...");
         }
         catch (Exception ex)
         {
@@ -80,7 +85,12 @@
     private void ShowConfirmModal(int packageId)
     {
         packageIdToSubscribe = packageId;
+        Console.WriteLine($"Package: {packageIdToSubscribe}");
         JSRuntime.InvokeVoidAsync("showModal", "confirmModal");
+    }
+    private void CloseConfirmation()
+    {
+        JSRuntime.InvokeVoidAsync("hideModal", "confirmModal");
     }
 
     private async Task HandleConfirm(bool confirmed)
@@ -88,13 +98,13 @@
         JSRuntime.InvokeVoidAsync("hideModal", "confirmModal");
         if (confirmed)
         {
-            await JSRuntime.InvokeVoidAsync("showModal", "genericInputModal");
+            JSRuntime.InvokeVoidAsync("showModal", "genericInputModal");
         }
     }
 
     private async Task HandleModalSubmit(string input)
     {
-        JSRuntime.InvokeVoidAsync("hideModal", "genericInputModal");
+
         if (double.TryParse(input, out double number))
         {
             Montant = number;
@@ -103,6 +113,7 @@
         {
             Montant = null;
         }
+        JSRuntime.InvokeVoidAsync("hideModal", "genericInputModal");
 
         try
         {

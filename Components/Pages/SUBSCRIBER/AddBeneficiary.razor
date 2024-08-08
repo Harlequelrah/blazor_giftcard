@@ -20,7 +20,7 @@
 
 
 <div class="container">
-<EditForm Model="beneficiary" OnValidSubmit="RegisterBeneficiary" FormName="RegisterBeneficiaryForm" >
+<EditForm Model="beneficiary" OnValidSubmit="ShowConfirmModal" FormName="RegisterBeneficiaryForm" >
     <DataAnnotationsValidator />
     <ValidationSummary />
     <div>
@@ -48,11 +48,8 @@
   <div class="drop drop-4"></div>
   <div class="drop drop-5"></div>
 </div>
-<ConfirmDeleteModal Title="Confirmation" OnConfirm="HandleConfirm">
-    <p>Souhaitez-vous enregistrer ce bénéficiaire?</p>
-</ConfirmDeleteModal>
-
-<GenericInputModal Title="Entrer un montant" InputLabel="Montant" OnSubmit="HandleModalSubmit" />
+ <ConfirmModal Title="Souhaitez-vous definir un Montant spécifique?" OnConfirm="HandleConfirm" OnClose="CloseConfirmation" />
+ <GenericInputModal Title="Entrer un montant" InputLabel="Montant" OnSubmit="HandleModalSubmit" />
 <Redirection Url="@RedirectUrl" />
 
 @code {
@@ -65,28 +62,29 @@ private string RedirectUrl => $"add/beneficiary/{IdSubscription}";
 
 
 
-private async Task RegisterBeneficiary()
+private async Task ShowConfirmModal()
     {
         beneficiary.IdSubscription = IdSubscription;
-        await JSRuntime.InvokeVoidAsync("$('#confirmModal').modal", "show");
+        JSRuntime.InvokeVoidAsync("showModal", "confirmModal");
     }
 
     private async Task HandleConfirm(bool confirmed)
     {
-        await JSRuntime.InvokeVoidAsync("$('#confirmModal').modal', 'hide");
+        JSRuntime.InvokeVoidAsync("hideModal", "confirmModal");
         if (confirmed)
         {
-            await JSRuntime.InvokeVoidAsync("$('#genericInputModal').modal", "show");
+            JSRuntime.InvokeVoidAsync("showModal", "genericInputModal");
         }
     }
-
-    private async Task HandleModalSubmit(string input)
+    private async Task  CloseConfirmation()
     {
-        await JSRuntime.InvokeVoidAsync("$('#genericInputModal').modal', 'hide");
-        if (double.TryParse(input, out double number))
-        {
-            Montant = number;
-            try
+        await RegisterBeneficiaryAsync();
+        JSRuntime.InvokeVoidAsync("hideModal", "confirmModal");
+
+    }
+    private async Task RegisterBeneficiaryAsync()
+    {
+        try
             {
                 await SS.RegisterBeneficiaryAsync(UserContext.Subscriber.Id, Montant, beneficiary);
                 Notify.Success("L'enregistrement s'est déroulé avec succès", "SUCCESS");
@@ -102,6 +100,17 @@ private async Task RegisterBeneficiary()
                 Notify.Error("Erreur lors de l'enregistrement du bénéficiaire", "ERROR");
                 Console.WriteLine($"Error loading Subscriptions: {ex.Message}");
             }
+
+    }
+
+    private async Task HandleModalSubmit(string input)
+    {
+        if (double.TryParse(input, out double number))
+        {
+            Montant = number;
+            JSRuntime.InvokeVoidAsync("hideModal", "genericInputModal");
+            await RegisterBeneficiaryAsync();
+
         }
         else
         {

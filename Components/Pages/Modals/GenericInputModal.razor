@@ -1,24 +1,22 @@
-@* GenericInputModal.razor *@
 
-<div class="modal fade" id="genericInputModal" tabindex="-1" aria-labelledby="genericInputModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="genericInputModalLabel">@Title</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+@inject IJSRuntime JSRuntime
+<div class="confirm-modal-overlay" id="genericInputModal" @onclick="Close">
+    <div class="confirm-modal-container" @onclick:stopPropagation="true">
+        <div class="confirm-modal-header">
+            <h5 class="confirm-modal-title">@Title</h5>
+            <button type="button" class="close" @onclick="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="confirm-modal-body">
+            <div class="form-group">
+                <label for="inputValue">@InputLabel</label>
+                <input type="text" class="form-control" id="inputValue" @bind="InputValue" />
             </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="inputValue">@InputLabel</label>
-                    <input type="text" class="form-control" id="inputValue" @bind="InputValue" />
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
-                <button type="button" class="btn btn-primary" @onclick="Submit">Soumettre</button>
-            </div>
+        </div>
+        <div class="confirm-modal-footer">
+            <button type="button" class="btn btn-confirm-secondary" @onclick="Close">Fermer</button>
+            <button type="button" class="btn btn-confirm-primary" @onclick="Submit">Soumettre</button>
         </div>
     </div>
 </div>
@@ -32,5 +30,10 @@
     private async Task Submit()
     {
         await OnSubmit.InvokeAsync(InputValue);
+    }
+
+    private void Close()
+    {
+        JSRuntime.InvokeVoidAsync("hideModal", "genericInputModal");
     }
 }

@@ -40,10 +40,10 @@ $(document).ready(function() {
         toastr.info(message, title, options);
     };
     window.showModal = function (modalId) {
-        $('#' + modalId).modal('show');
+        $('#' + modalId).show();
     };
 
     window.hideModal = function (modalId) {
-        $('#' + modalId).modal('hide');
+        $('#' + modalId).hide();
     };
 });
