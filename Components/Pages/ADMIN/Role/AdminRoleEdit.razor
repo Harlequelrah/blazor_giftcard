@@ -1,0 +1,17 @@
+@page "/admin/role/update/{RoleId:int}"
+@using blazor_giftcard.Models
+@inject AdminService AS
+Id : @Role.Id
+Nom !! : @Role.RoleNom
+@code
+{
+    [Parameter]
+    public int RoleId { get; set; }
+    private Role Role = new Role();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Delay(200);
+        Role=await AS.GetRoleAsync(RoleId);
+    }
+}

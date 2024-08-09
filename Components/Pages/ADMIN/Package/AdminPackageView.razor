@@ -1,0 +1,124 @@
+@page "/admin/package/view"
+@inject ToastrService Notify
+@using blazor_giftcard.Models
+@using blazor_giftcard.Services
+@inject NavigationManager Navigation
+@inject AdminService AS
+@inject IJSRuntime JSRuntime
+@inject SubscriberService SS
+@rendermode InteractiveServer
+
+<head>
+    <link rel="stylesheet" href="ListView.css" />
+</head>
+
+<PageTitle>GoChap Packages</PageTitle>
+<h3>Liste des Packages</h3>
+
+<div class="container">
+    @if (Packages == null)
+    {
+        <div class="drop col-md-3">
+            <p>Loading...</p>
+        </div>
+    }
+    else if (Packages.Count == 0)
+    {
+        <p>No packages available.</p>
+    }
+    else
+    {
+        <div class="listview-container">
+            <table class="listview-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nom</th>
+                        <th>Description</th>
+                        <th>Validité</th>
+                        <th>Budget</th>
+                        <th>Prix</th>
+                        <th>Montant de Base</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var package in Packages)
+                    {
+                        <tr>
+                            <td>@package.Id</td>
+                            <td>@package.NomPackage</td>
+                            <td>@package.Description</td>
+                            <td> @(package.NbrJour.HasValue ? package.NbrJour.ToString() : "Illimité")</td>
+                            <td>@package.Budget</td>
+                            <td>@package.Prix</td>
+                            <td>@package.MontantBase</td>
+                            <td>
+                                <a href="javascript:void(0)" @onclick="() => UpdatePackage(package.Id)">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                                <a href="javascript:void(0)" @onclick="() => DeletePackage(package.Id)" style="margin-left: 10px;">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+<ConfirmModal Title="Souhaitez vous vraiment supprimer ce package?" OnConfirm="DeleteConfirm" OnClose="CloseConfirmation" />
+
+<Redirection Url="admin/package/view" />
+
+@code {
+    private List<Package> Packages = new List<Package>();
+    private int PackageId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Delay(200);
+        await LoadPackages();
+    }
+
+    private async Task LoadPackages()
+    {
+        try
+        {
+            Packages = await SS.GetPackagesAsync();
+        }
+        catch (Exception ex)
+        {
+            Notify.Error($"Error retrieving packages: {ex.Message}", "ERROR");
+            Console.WriteLine($"Error loading Packages: {ex.Message}");
+        }
+    }
+
+    private void UpdatePackage(int packageId)
+    {
+        Navigation.NavigateTo($"admin/package/update/{packageId}");
+    }
+
+    private void DeletePackage(int packageId)
+    {
+        PackageId = packageId;
+        JSRuntime.InvokeVoidAsync("showModal", "confirmModal");
+    }
+
+    private void CloseConfirmation()
+    {
+        JSRuntime.InvokeVoidAsync("hideModal", "confirmModal");
+    }
+
+    private async Task DeleteConfirm(bool confirmed)
+    {
+        JSRuntime.InvokeVoidAsync("hideModal", "confirmModal");
+        if (confirmed)
+        {
+            await AS.DeletePackageAsync(PackageId);
+            await LoadPackages();
+        }
+    }
+}

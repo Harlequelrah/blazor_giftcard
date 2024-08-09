@@ -1,0 +1,114 @@
+@page "/admin/role/view"
+@inject ToastrService Notify
+@using blazor_giftcard.Models
+@using blazor_giftcard.Services
+@inject NavigationManager Navigation
+@inject AdminService AS
+@inject IJSRuntime JSRuntime
+@inject SubscriberService SS
+@rendermode InteractiveServer
+
+<head>
+    <link rel="stylesheet" href="ListView.css" />
+</head>
+
+<PageTitle>GoChap Roles</PageTitle>
+<h3>Liste des Roles</h3>
+
+<div class="container">
+    @if (Roles == null)
+    {
+        <div class="drop col-md-3">
+            <p>Loading...</p>
+        </div>
+    }
+    else if (Roles.Count == 0)
+    {
+        <p>No roles available.</p>
+    }
+    else
+    {
+        <div class="listview-container">
+            <table class="listview-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nom</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var role in Roles)
+                    {
+                        <tr>
+                            <td>@role.Id</td>
+                            <td>@role.RoleNom</td>
+                            <td>
+                                <a href="javascript:void(0)" @onclick="() => UpdateRole(role.Id)">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                                <a href="javascript:void(0)" @onclick="() => DeleteRole(role.Id)" style="margin-left: 10px;">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+<ConfirmModal Title="Souhaitez vous vraiment supprimer ce role?" OnConfirm="DeleteConfirm" OnClose="CloseConfirmation" />
+
+<Redirection Url="admin/role/view" />
+
+@code {
+    private List<Role> Roles = new List<Role>();
+    private int RoleId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Delay(200);
+        await LoadRoles();
+    }
+
+    private async Task LoadRoles()
+    {
+        try
+        {
+            Roles = await AS.GetRolesAsync();
+        }
+        catch (Exception ex)
+        {
+            Notify.Error($"Error retrieving roles: {ex.Message}", "ERROR");
+            Console.WriteLine($"Error loading Roles: {ex.Message}");
+        }
+    }
+
+    private void UpdateRole(int roleId)
+    {
+        Navigation.NavigateTo($"admin/role/update/{roleId}");
+    }
+
+    private void DeleteRole(int roleId)
+    {
+        RoleId = roleId;
+        JSRuntime.InvokeVoidAsync("showModal", "confirmModal");
+    }
+
+    private void CloseConfirmation()
+    {
+        JSRuntime.InvokeVoidAsync("hideModal", "confirmModal");
+    }
+
+    private async Task DeleteConfirm(bool confirmed)
+    {
+        JSRuntime.InvokeVoidAsync("hideModal", "confirmModal");
+        if (confirmed)
+        {
+            await AS.DeleteRoleAsync(RoleId);
+            await LoadRoles();
+        }
+    }
+}

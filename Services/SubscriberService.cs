@@ -39,11 +39,11 @@ namespace blazor_giftcard.Services
             {
                 _logger.LogInformation("Getting packages.");
                 var response = await _authClient.GetStringAsync("Package");
-
                 using (var document = JsonDocument.Parse(response))
                 {
                     var root = document.RootElement;
                     var packagesElement = root.GetProperty("$values");
+                    Console.WriteLine(packagesElement);
                     var options = new JsonSerializerOptions
                     {
                         PropertyNameCaseInsensitive = true
