@@ -40,6 +40,21 @@ namespace blazor_giftcard.Services
                 return null;
             }
         }
+        public async Task<User> GetUserAsync(int id)
+        {
+            try
+            {
+                _logger.LogInformation($"Getting User with ID {id}.");
+                var User = await _authClient.GetFromJsonAsync<User>($"User/{id}");
+                _logger.LogInformation($"Successfully retrieved User with ID {id}.");
+                return User;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error retrieving User with ID {id}: {ex.Message}");
+                return null;
+            }
+        }
 
         public async Task<Package> CreatePackageAsync(PackageDto packageDto)
         {
@@ -74,6 +89,27 @@ namespace blazor_giftcard.Services
                 return false;
             }
         }
+         public async Task<bool> UpdateUserAsync(int id,bool state)
+        {
+            try
+            {
+                var user = await GetUserAsync(id);
+                Console.WriteLine("id:"+user.Id);
+                user.IsActive = state;
+                _logger.LogInformation($"Updating user with ID {id}.");
+                var response = await _authClient.PutAsJsonAsync($"User/{id}",new{Id=user.Id,IsActive=state});
+                response.EnsureSuccessStatusCode();
+                _logger.LogInformation($"Successfully updated user with ID {id}.");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error updating user with ID {id}: {ex.Message}");
+                return false;
+            }
+        }
+
+
 
 
         public async Task<bool> DeletePackageAsync(int id)
@@ -97,40 +133,17 @@ namespace blazor_giftcard.Services
             try
             {
                 _logger.LogInformation("Getting all roles.");
-
-                // Récupération de la réponse brute sous forme de chaîne de caractères
                 var response = await _authClient.GetStringAsync("Role");
-
-                // Impression de la réponse brute pour examen
-
-                // Analyse de la réponse JSON
                 using (var document = JsonDocument.Parse(response))
                 {
                     var root = document.RootElement;
-
-                    // Impression du document JSON complet
-
-                    // Extraction de l'élément $values
                     var valuesElement = root.GetProperty("$values");
-
-                    // Impression de l'élément $values
-                    Console.WriteLine("Values Element: " + valuesElement);
-
                     var options = new JsonSerializerOptions
                     {
                         PropertyNameCaseInsensitive = true
                     };
-
-                    // Désérialisation des données
                     var roles = JsonSerializer.Deserialize<List<Role>>(valuesElement.GetRawText(), options);
-
                     _logger.LogInformation("Successfully retrieved roles.");
-
-                    foreach (var role in roles)
-                    {
-                        Console.WriteLine("Role: " + role.Id + ", RoleNom: " + role.RoleNom);
-                    }
-
                     return roles;
                 }
             }
@@ -140,6 +153,33 @@ namespace blazor_giftcard.Services
                 return new List<Role>();
             }
         }
+        public async Task<List<User>> GetUsersAsync()
+        {
+            try
+            {
+                _logger.LogInformation("Getting all users.");
+                var response = await _authClient.GetStringAsync("User");
+                using (var document = JsonDocument.Parse(response))
+                {
+                    var root = document.RootElement;
+                    var valuesElement = root.GetProperty("$values");
+                    var options = new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    };
+                    Console.WriteLine(valuesElement);
+                    var users = JsonSerializer.Deserialize<List<User>>(valuesElement.GetRawText(), options);
+                    _logger.LogInformation("Successfully retrieved users.");
+                    return users;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error retrieving users: {ex.Message}");
+                return new List<User>();
+            }
+        }
+
 
         // Get a role by ID
         public async Task<Role> GetRoleAsync(int id)
@@ -147,14 +187,7 @@ namespace blazor_giftcard.Services
             try
             {
                 _logger.LogInformation($"Getting role with ID {id}.");
-                var role= await _authClient.GetFromJsonAsync<Role>($"Role/{id}");
-                Console.WriteLine($"RoleID: {role.Id}");
-                Console.WriteLine($"Rolenom: {role.RoleNom}");
-                //var response = await _authClient.GetStringAsync($"Role/{id}");
-                //Console.WriteLine(response);
-              //  var role = JsonSerializer.Deserialize<Role>(response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                // var response = await _authClient.GetFromJsonAsync<Subscriber>($"Subscriber/ByUser/{IdUser}");
-                // var role = JsonSerializer.Deserialize<Role>(response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                var role = await _authClient.GetFromJsonAsync<Role>($"Role/{id}");
                 _logger.LogInformation($"Successfully retrieved role with ID {id}.");
                 return role;
             }

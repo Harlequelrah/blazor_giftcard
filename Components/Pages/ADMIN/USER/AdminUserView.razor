@@ -1,0 +1,130 @@
+@page "/admin/user/view"
+@inject ToastrService Notify
+@using blazor_giftcard.Models
+@using blazor_giftcard.Services
+@inject NavigationManager Navigation
+@inject AdminService AS
+@inject IJSRuntime JSRuntime
+@inject SubscriberService SS
+@rendermode InteractiveServer
+@inject AdminService AS
+<head>
+<link rel="stylesheet" href="ListView.css" />
+</head>
+<PageTitle>GoChap Users</PageTitle>
+<h3>Liste des utilisateurs</h3>
+
+<div class="container">
+    @if (Users == null)
+    {
+        <div class="drop col-md-3">
+            <p>Loading...</p>
+        </div>
+    }
+    else if (Users.Count == 0)
+    {
+        <p>No users available.</p>
+    }
+    else
+    {
+        <div class="listview-container">
+            <table class="listview-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Role</th>
+                        <th>Email</th>
+                        <th>Telephone</th>
+                        <th>Date Inscription</th>
+                        <th>Adresse</th>
+                        <th>Actif/Inactif</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Users)
+                    {
+                        <tr>
+                            <td>@user.Id</td>
+                            <td>@user.NomRole</td>
+                            <td>@user.Email</td>
+                            <td>@user.Telephone</td>
+                            <td>@user.DateInscription</td>
+                            <td>@user.Adresse</td>
+
+                            @if(user.IsActive)
+                            {
+                                <td><i class="bi bi-check-circle"></i>
+
+                                    <button class="btn btn-danger"  @onclick="() => UpdateUser(user.Id,false)">
+                                    <i class="bi bi-x-circle"></i>
+                                    </button>
+                                </td>
+                            }
+                            else
+                            {
+                                <td><i class="bi bi-x-circle"></i>
+                                    <button class="btn btn-success" @onclick="() => UpdateUser(user.Id,true)" >
+                                        <i class="bi bi-check-circle"></i>
+                                    </button>
+                                </td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+
+<Redirection Url="admin/user/view" />
+
+@code {
+    private List<User> Users = new List<User>();
+    List<Role> Roles = new List<Role>();
+    private int UserId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Delay(200);
+        await LoadUsers();
+    }
+
+    private async Task LoadUsers()
+    {
+        try
+        {
+            Users = await AS.GetUsersAsync();
+            Roles = await AS.GetRolesAsync();
+            foreach(var role in Roles)
+            {
+                foreach(var user in Users)
+                {
+                    if(user.IdRole==role.Id)user.NomRole=role.RoleNom;
+                }
+            }
+
+        }
+        catch (Exception ex)
+        {
+            Notify.Error($"Error retrieving users: {ex.Message}", "ERROR");
+            Console.WriteLine($"Error loading Users: {ex.Message}");
+        }
+    }
+
+    private async Task UpdateUser(int userId,bool state)
+    {
+        var update =await AS.UpdateUserAsync(userId,state);
+        if(update) {
+            await LoadUsers();
+            StateHasChanged();
+
+        }
+
+
+
+    }
+
+
+
+}
