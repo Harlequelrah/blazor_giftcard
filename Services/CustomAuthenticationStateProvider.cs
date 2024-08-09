@@ -77,6 +77,7 @@ namespace blazor_giftcard.Services
 
             if (current_user.Identity.IsAuthenticated)
             {
+                Console.WriteLine($"Role:{_role} et actif:{_isActive}");
                 if ((_role != "ADMIN" && _role != "SUBSCRIBER") || !_isActive)
                 {
                     _logger.LogInformation("Not Authorized");
@@ -92,6 +93,7 @@ namespace blazor_giftcard.Services
             }
             else { _logger.LogInformation("Utilisateur Actuel n'est connecté"); }
             // return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
+            _logger.LogInformation("Allons chercher token dans storage");
 
             _token = await GetToken();
             var identity = new ClaimsIdentity();
@@ -109,6 +111,11 @@ namespace blazor_giftcard.Services
 
 
             current_user = new ClaimsPrincipal(identity);
+            _role = current_user.FindFirst("role")?.Value ?? "";
+            _userName = current_user.FindFirst("unique_name")?.Value ?? "";
+            var isActiveClaim = current_user.Claims.FirstOrDefault(c => c.Type == "IsActive")?.Value;
+            _isActive = bool.Parse(isActiveClaim);
+
             _logger.LogInformation($"User authenticated: {current_user.Identity.IsAuthenticated}");
             return new AuthenticationState(current_user);
         }

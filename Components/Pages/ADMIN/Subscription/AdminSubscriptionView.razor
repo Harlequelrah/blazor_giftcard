@@ -11,7 +11,7 @@
 @rendermode InteractiveServer
 <head>
 
-<link rel="stylesheet" href="View.css" />
+<link rel="stylesheet" href="ListView.css" />
 </head>
 <PageTitle>Subscription</PageTitle>
 <div class="container">
@@ -52,7 +52,7 @@
                             <td>@subscription.DateSouscription</td>
                             <td>@subscription.NbrCarteGenere</td>
                             <td> @((!string.IsNullOrEmpty(subscription.DateExpiration)) ? subscription.DateExpiration :"Illimité")</td>
-                            <td>@(subscription.MontantParCarte.HasValue? subscription.MontantParCarte.ToString(): "Non Defini")</td>>
+                            <td>@(subscription.MontantParCarte.HasValue? subscription.MontantParCarte.ToString(): "Non Defini")</td>
                         </tr>
                     }
                 </tbody>

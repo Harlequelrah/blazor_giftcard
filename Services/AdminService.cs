@@ -158,7 +158,7 @@ namespace blazor_giftcard.Services
             try
             {
                 _logger.LogInformation("Getting all users.");
-                var response = await _authClient.GetStringAsync("User/GeFormatedUsers");
+                var response = await _authClient.GetStringAsync("User/GetFormatedUsers");
                 using (var document = JsonDocument.Parse(response))
                 {
                     var root = document.RootElement;
@@ -167,7 +167,6 @@ namespace blazor_giftcard.Services
                     {
                         PropertyNameCaseInsensitive = true
                     };
-                    Console.WriteLine(valuesElement);
                     var users = JsonSerializer.Deserialize<List<User>>(valuesElement.GetRawText(), options);
                     _logger.LogInformation("Successfully retrieved users.");
                     return users;
@@ -257,7 +256,7 @@ namespace blazor_giftcard.Services
             try
             {
                 _logger.LogInformation($"Getting subscription with ID {packageId}.");
-                var response = await _authClient.GetStringAsync($"Subscription/Package{packageId}");
+                var response = await _authClient.GetStringAsync($"Subscription/Package/{packageId}");
                 using (var document = JsonDocument.Parse(response))
                 {
                     var root = document.RootElement;
