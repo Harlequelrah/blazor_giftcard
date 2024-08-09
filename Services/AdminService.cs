@@ -158,7 +158,7 @@ namespace blazor_giftcard.Services
             try
             {
                 _logger.LogInformation("Getting all users.");
-                var response = await _authClient.GetStringAsync("User");
+                var response = await _authClient.GetStringAsync("User/GeFormatedUsers");
                 using (var document = JsonDocument.Parse(response))
                 {
                     var root = document.RootElement;
@@ -250,6 +250,31 @@ namespace blazor_giftcard.Services
             {
                 _logger.LogError($"Error deleting role with ID {id}: {ex.Message}");
                 return false;
+            }
+        }
+        public async Task<List<Subscription>> GetSubscriptionsByPackageAsync(int packageId)
+        {
+            try
+            {
+                _logger.LogInformation($"Getting subscription with ID {packageId}.");
+                var response = await _authClient.GetStringAsync($"Subscription/Package{packageId}");
+                using (var document = JsonDocument.Parse(response))
+                {
+                    var root = document.RootElement;
+                    var subscriptionsElement = root.GetProperty("$values");
+                    var options = new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    };
+                    var subscriptions = JsonSerializer.Deserialize<List<Subscription>>(subscriptionsElement.GetRawText(), options);
+                    _logger.LogInformation($"Successfully retrieved subscription with ID {packageId}.");
+                    return subscriptions;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error retrieving subscriptions for subscriber ID {packageId}: {ex.Message}");
+                return new List<Subscription>();
             }
         }
     }

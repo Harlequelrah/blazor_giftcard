@@ -33,7 +33,7 @@
                     <h2>@subscription.NomPackage</h2>
                     <p>Budget Restant : @subscription.BudgetRestant €</p>
                     <p>DateSouscription : @subscription.DateSouscription</p>
-                    <p>Nombre de cartes générées : @(subscription.NbrCarteGenere.HasValue ? subscription.NbrCarteGenere.ToString() : "Illimité")</p>
+                    <p>Nombre de cartes générées : @subscription.NbrCarteGenere.</p>
                     <p>Montant Par carte : @subscription.MontantParCarte</p>
                     <p>Date Expiration : @(!string.IsNullOrEmpty(subscription.DateExpiration) ? subscription.DateExpiration : "Illimité")</p>
                     <button @onclick="() => Add(subscription.Id)">Ajouter un beneficiaire</button>

@@ -13,7 +13,9 @@ namespace blazor_giftcard.Models
 
         public string NomPackage { get; set; }
 
-        public int? NbrCarteGenere { get; set; }
+        public string NomSubscriber { get; set;} ="";
+
+        public int NbrCarteGenere { get; set; }
 
         public double BudgetRestant {  get ; set; }
 
