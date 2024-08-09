@@ -1,4 +1,4 @@
-@page "/admin/subscription/view/{packageId:int}"
+@page "/admin/package/subscription/view/{packageId:int}"
 @using blazor_giftcard.Services
 @using blazor_giftcard.Models
 @inject ToastrService Notify
@@ -68,7 +68,7 @@
 {
     [Parameter]
     public int packageId { get; set;}
-    private string RedirectionUrl => $"admin/subscription/view/{packageId}";
+    private string RedirectionUrl => $"admin/package/subscription/view/{packageId}";
     private List<Subscription> Subscriptions =new List<Subscription>();
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {

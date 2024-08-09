@@ -1,0 +1,147 @@
+@page "/admin/subscriber/view"
+@using blazor_giftcard.Services
+@using blazor_giftcard.Models
+@inject ToastrService Notify
+@inject SubscriberService SS
+@inject AdminService AS
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+@rendermode InteractiveServer
+<head>
+
+<link rel="stylesheet" href="ListView.css" />
+</head>
+<PageTitle>Subscribers</PageTitle>
+<div class="container">
+    @if (Subscribers == null)
+    {
+        <div class="drop col-md-3">
+        <p>Loading...</p>
+        </div>
+    }
+    else if (Subscribers.Count == 0)
+    {
+        <p>No subscribers available.</p>
+    }
+    else
+    {
+        <div class="listview-container">
+            <table class="listview-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>IdUser</th>
+                        <th>Nom</th>
+                        <th>Solde</th>
+                        <th>Souscriptions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var subscriber in Subscribers)
+                    {
+                        <tr>
+                            <td>@subscriber.Id</td>
+                            <td>@subscriber.IdUser</td>
+                            <td>@subscriber.SubscriberName</td>
+                            @if(subscriber.SubscriberWallet!=null)
+                            {
+                                <td>
+                                <span style="margin-right:6px;">@subscriber.SubscriberWallet.Solde @subscriber.SubscriberWallet.Devise</span>
+                                    <a href="javascript:void(0)" @onclick="() => UpdateWallet(subscriber.Id)">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                                </td>
+
+                            }
+                            else{
+                                <td>Indisponible</td>
+                            }
+                                <td>
+                                <a href="javascript:void(0)" @onclick="() => ViewSubscription(subscriber.Id)" style="margin-left: 10px;">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+<ConfirmModal Title="Souhaitez vous vraiment modifier ce solde?" OnConfirm="HandleConfirm" OnClose="CloseConfirmation" />
+<GenericInputModal Title="Entrer un montant" InputLabel="Montant" OnSubmit="HandleModalSubmit" />
+<Redirection Url="admin/subscriber/view" />
+
+@code
+{
+    private double Montant ;
+    private List<Subscriber> Subscribers =new List<Subscriber>();
+    private int IdWallet ;
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await Task.Delay(100);
+            await LoadSubscribers();
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadSubscribers()
+    {
+
+        try
+        {
+            Subscribers = await AS.GetSubscribersAsync();
+        }
+
+                catch (Exception ex)
+        {
+            Notify.Error("Error retrieving subscribers", "Erreur");
+            Console.WriteLine($"Error loading Subscribers: {ex.Message}");
+        }
+    }
+    private void ViewSubscription(int subscriberId)
+    {
+        Navigation.NavigateTo($"admin/subscriber/subscription/view/{subscriberId}");
+    }
+        private void UpdateWallet(int idWallet)
+    {
+        IdWallet = idWallet;
+        JSRuntime.InvokeVoidAsync("showModal", "confirmModal");
+    }
+        private async Task HandleConfirm(bool confirmed)
+    {
+        JSRuntime.InvokeVoidAsync("hideModal", "confirmModal");
+        if (confirmed)
+        {
+            JSRuntime.InvokeVoidAsync("showModal", "genericInputModal");
+        }
+    }
+        private async Task  CloseConfirmation()
+    {
+        JSRuntime.InvokeVoidAsync("hideModal", "confirmModal");
+    }
+    private async Task HandleModalSubmit(string input)
+    {
+        if (double.TryParse(input, out double number))
+        {
+            Montant = number;
+            JSRuntime.InvokeVoidAsync("hideModal", "genericInputModal");
+            var update = await AS.UpdateWalletAsync(IdWallet,Montant);
+            if(update)
+            {
+                Notify.Success("Mise à jour du sode effectuée avec succès","SUCCESS");
+                await LoadSubscribers();
+                StateHasChanged();
+            }
+
+
+        }
+        else
+        {
+            Notify.Error("Montant invalide", "ERROR");
+        }
+    }
+}

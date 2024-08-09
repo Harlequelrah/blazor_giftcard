@@ -178,6 +178,35 @@ namespace blazor_giftcard.Services
                 return new List<User>();
             }
         }
+        public async Task<List<Subscriber>> GetSubscribersAsync()
+        {
+            try
+            {
+                _logger.LogInformation("Getting subscribers.");
+                var response = await _authClient.GetStringAsync("Subscriber");
+                using (var document = JsonDocument.Parse(response))
+                {
+                    var root = document.RootElement;
+                    var subscribersElement = root.GetProperty("$values");
+                    Console.WriteLine(response);
+                    var options = new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    };
+
+                    var subscribers = JsonSerializer.Deserialize<List<Subscriber>>(subscribersElement.GetRawText(), options);
+                    _logger.LogInformation("Successfully retrieved subscribers.");
+                    return subscribers;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error retrieving Subscribers: {ex.Message}");
+                return new List<Subscriber>(); // Retourne une liste vide en cas d'erreur
+            }
+
+
+        }
 
 
         // Get a role by ID
@@ -216,7 +245,22 @@ namespace blazor_giftcard.Services
             }
         }
 
-        // Update an existing role
+        public async Task<bool> UpdateWalletAsync(int idWallet , double Montant)
+        {
+            try
+            {
+                _logger.LogInformation($"Updating wallet with ID {idWallet}.");
+                var response = await _authClient.PutAsJsonAsync($"Wallet/{idWallet}", new { Montant = Montant });
+                response.EnsureSuccessStatusCode();
+                _logger.LogInformation($"Successfully updated wallet with ID {idWallet}.");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error updating wallet with ID {idWallet}: {ex.Message}");
+                return false;
+            }
+        }
         public async Task<bool> PutRoleAsync(int id, RoleDto roleDto)
         {
             try

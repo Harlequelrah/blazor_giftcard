@@ -1,0 +1,99 @@
+@page "/admin/subscriber/subscription/view/{subscriberId:int}"
+@using blazor_giftcard.Services
+@using blazor_giftcard.Models
+@inject ToastrService Notify
+@inject SubscriberService SS
+@inject AdminService AS
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+@inject CustomAuthenticationStateProvider CAST
+@inject UserContextService UserContext
+@rendermode InteractiveServer
+<head>
+
+<link rel="stylesheet" href="ListView.css" />
+</head>
+<PageTitle>Subscription</PageTitle>
+<div class="container">
+    @if (Subscriptions == null)
+    {
+        <div class="drop col-md-3">
+        <p>Loading...</p>
+        </div>
+    }
+    else if (Subscriptions.Count == 0)
+    {
+        <p>No subscriptions available.</p>
+    }
+    else
+    {
+        <div class="listview-container">
+            <table class="listview-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Package</th>
+                        <th>Budget Restant</th>
+                        <th>Date Souscription</th>
+                        <th>Date Expiration</th>
+                        <th>Carte Genere</th>
+                        <th>Montant/Carte</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var subscription in Subscriptions)
+                    {
+                        <tr>
+                            <td>@subscription.Id</td>
+                            <td>@subscription.NomPackage</td>
+                            <td>@subscription.BudgetRestant</td>
+                            <td>@subscription.DateSouscription</td>
+                            <td>@subscription.NbrCarteGenere</td>
+                            <td> @((!string.IsNullOrEmpty(subscription.DateExpiration)) ? subscription.DateExpiration :"Illimité")</td>
+                            <td>@(subscription.MontantParCarte.HasValue? subscription.MontantParCarte.ToString(): "Non Defini")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+
+<Redirection Url="@RedirectionUrl" />
+
+@code
+{
+    [Parameter]
+    public int subscriberId { get; set;}
+    private string RedirectionUrl => $"admin/subscriber/subscription/view/{subscriberId}";
+    private List<Subscription> Subscriptions =new List<Subscription>();
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await Task.Delay(100);
+            await LoadSubscriptions();
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadSubscriptions()
+    {
+
+        try
+        {
+            if(subscriberId!=0)
+            {
+                Subscriptions = await SS.GetSubscriptionsBySubscriberAsync(subscriberId);
+            }
+            else  Notify.Error($"le souscripteur n' a pas été correctement specifié", "Erreur");
+
+        }
+                catch (Exception ex)
+        {
+            Notify.Error("Error retrieving subscriptions", "Erreur");
+            Console.WriteLine($"Error loading Subscriptions: {ex.Message}");
+        }
+    }
+}
