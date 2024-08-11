@@ -204,9 +204,63 @@ namespace blazor_giftcard.Services
                 _logger.LogError($"Error retrieving Subscribers: {ex.Message}");
                 return new List<Subscriber>(); // Retourne une liste vide en cas d'erreur
             }
-
-
         }
+        public async Task<List<Beneficiary>> GetBeneficiariesAsync()
+        {
+            try
+            {
+                _logger.LogInformation("Getting beneficiaries.");
+                var response = await _authClient.GetStringAsync("Beneficiary");
+                using (var document = JsonDocument.Parse(response))
+                {
+                    var root = document.RootElement;
+                    var beneficiariesElement = root.GetProperty("$values");
+                    Console.WriteLine(response);
+                    var options = new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    };
+
+                    var beneficiaries = JsonSerializer.Deserialize<List<Beneficiary>>(beneficiariesElement.GetRawText(), options);
+                    _logger.LogInformation("Successfully retrieved beneficiaries.");
+                    return beneficiaries;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error retrieving Beneficiaries: {ex.Message}");
+                return new List<Beneficiary>();
+            }
+        }
+        public async Task<List<Merchant>> GetMerchantsAsync()
+        {
+            try
+            {
+                _logger.LogInformation("Getting merchants.");
+                var response = await _authClient.GetStringAsync("Merchant");
+                using (var document = JsonDocument.Parse(response))
+                {
+                    var root = document.RootElement;
+                    var merchantsElement = root.GetProperty("$values");
+                    Console.WriteLine(response);
+                    var options = new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    };
+
+                    var merchants = JsonSerializer.Deserialize<List<Merchant>>(merchantsElement.GetRawText(), options);
+                    _logger.LogInformation("Successfully retrieved merchants.");
+                    return merchants;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error retrieving Merchants: {ex.Message}");
+                return new List<Merchant>();
+            }
+        }
+
+
 
 
         // Get a role by ID
@@ -320,5 +374,58 @@ namespace blazor_giftcard.Services
                 return new List<Subscription>();
             }
         }
+        public async Task<List<MerchantHistory>> GetMerchantHistoriesAsync(int idMerchant)
+        {
+            try
+            {
+                _logger.LogInformation($"Getting history for merchant ID {idMerchant}.");
+                var response = await _authClient.GetStringAsync($"Merchant/history/{idMerchant}");
+                using (var document = JsonDocument.Parse(response))
+                {
+                    var root = document.RootElement;
+                    var historiesElement = root.GetProperty("$values");
+                    var options = new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    };
+                    var histories = JsonSerializer.Deserialize<List<MerchantHistory>>(historiesElement.GetRawText(), options);
+                    _logger.LogInformation($"Successfully retrieved history for merchant ID {idMerchant}.");
+                    return histories;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error retrieving history for merchant ID {idMerchant}: {ex.Message}");
+                return new List<MerchantHistory>();
+            }
+        }
+        public async Task<List<BeneficiaryHistory>> GetBeneficiaryHistoriesAsync(int idBeneficiary)
+        {
+            try
+            {
+                _logger.LogInformation($"Getting history for beneficiary ID {idBeneficiary}.");
+                var response = await _authClient.GetStringAsync($"Beneficiary/history/{idBeneficiary}");
+                using (var document = JsonDocument.Parse(response))
+                {
+                    var root = document.RootElement;
+                    var historiesElement = root.GetProperty("$values");
+                    var options = new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    };
+                    var histories = JsonSerializer.Deserialize<List<BeneficiaryHistory>>(historiesElement.GetRawText(), options);
+                    _logger.LogInformation($"Successfully retrieved history for beneficiary ID {idBeneficiary}.");
+                    return histories;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error retrieving history for beneficiary ID {idBeneficiary}: {ex.Message}");
+                return new List<BeneficiaryHistory>();
+            }
+        }
+
+
+
     }
 }

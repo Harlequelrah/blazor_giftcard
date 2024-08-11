@@ -1,0 +1,25 @@
+public async Task<List<BeneficiaryHistory>> GetBeneficiaryHistoriesAsync(int idBeneficiary)
+        {
+            try
+            {
+                _logger.LogInformation($"Getting history for beneficiary ID {idBeneficiary}.");
+                var response = await _authClient.GetStringAsync($"Beneficiary/history/{idBeneficiary}");
+                using (var document = JsonDocument.Parse(response))
+                {
+                    var root = document.RootElement;
+                    var historiesElement = root.GetProperty("$values");
+                    var options = new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    };
+                    var histories = JsonSerializer.Deserialize<List<BeneficiaryHistory>>(historiesElement.GetRawText(), options);
+                    _logger.LogInformation($"Successfully retrieved history for beneficiary ID {idBeneficiary}.");
+                    return histories;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error retrieving history for beneficiary ID {idBeneficiary}: {ex.Message}");
+                return new List<BeneficiaryHistory>();
+            }
+        }

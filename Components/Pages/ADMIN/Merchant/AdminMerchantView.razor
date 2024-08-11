@@ -1,112 +1,113 @@
-@page "/admin/subscriber/view"
+@page "/admin/merchant/view"
 @using blazor_giftcard.Services
 @using blazor_giftcard.Models
 @inject ToastrService Notify
-@inject SubscriberService SS
 @inject AdminService AS
 @inject NavigationManager Navigation
 @inject IJSRuntime JSRuntime
 @rendermode InteractiveServer
 <head>
-
 <link rel="stylesheet" href="ListView.css" />
 </head>
-<PageTitle>Subscribers</PageTitle>
-<div class="container">
-    @if (Subscribers == null)
+<PageTitle>Merchants</PageTitle>
+<h3>Liste des Beneficiaires</h3>
+<div class="listview-container">
+    @if (Merchants == null)
     {
         <div class="drop col-md-3">
         <p>Loading...</p>
         </div>
     }
-    else if (Subscribers.Count == 0)
+    else if (Merchants.Count == 0)
     {
-        <p>No subscribers available.</p>
+        <p>No merchants available.</p>
     }
     else
     {
-        <div class="listview-container">
-            <table class="listview-table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>IdUser</th>
-                        <th>Nom</th>
-                        <th>Solde</th>
-                        <th>Souscriptions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                @foreach (var subscriber in Subscribers)
-                    {
-                        <tr>
-                            <td>@subscriber.Id</td>
-                            <td>@subscriber.IdUser</td>
-                            <td>@subscriber.SubscriberName</td>
-                            @if(subscriber.SubscriberWallet!=null)
+    <table class="listview-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>IdUser</th>
+                <th>Nom</th>
+                <th>Prenom</th>
+                <th>Solde</th>
+                <th>Historique</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var merchant in Merchants)
+            {
+                <tr>
+                    <td>@merchant.Id</td>
+                    <td>@merchant.IdUser</td>
+                    <td>@merchant.Nom</td>
+                    <td>@merchant.Prenom</td>
+                    @if(merchant.MerchantWallet!=null)
                             {
                                 <td>
-                                <span style="margin-right:6px;">@subscriber.SubscriberWallet.Solde @subscriber.SubscriberWallet.Devise</span>
-                                    <a href="javascript:void(0)" @onclick="() => UpdateWallet(subscriber.SubscriberWallet.Id)">
+                                <span style="margin-right:6px;">@merchant.MerchantWallet.Solde @merchant.MerchantWallet.Devise</span>
+                                    <a href="javascript:void(0)" @onclick="() => UpdateWallet(merchant.MerchantWallet.Id)">
                                     <i class="bi bi-pencil-square"></i>
                                 </a>
                                 </td>
-
                             }
                             else{
                                 <td>Indisponible</td>
                             }
-                                <td>
-                                <a href="javascript:void(0)" @onclick="() => ViewSubscription(subscriber.Id)" style="margin-left: 10px;">
+                            <td>
+                                <a href="javascript:void(0)" @onclick="() => ViewHistory(merchant.Id)" style="margin-left: 10px;">
                                     <i class="bi bi-eye"></i>
                                 </a>
                             </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
+                </tr>
+            }
+        </tbody>
+    </table>
+
     }
 </div>
-
 <ConfirmModal Title="Souhaitez vous vraiment modifier ce solde?" OnConfirm="HandleConfirm" OnClose="CloseConfirmation" />
 <GenericInputModal Title="Entrer un montant" InputLabel="Montant" OnSubmit="HandleModalSubmit" />
-<Redirection Url="admin/subscriber/view" />
+<Redirection Url="admin/merchant/view" />
 
 @code
 {
     private double Montant ;
     private int IdWallet ;
-    private List<Subscriber> Subscribers =new List<Subscriber>();
+    private List<Merchant> Merchants =new List<Merchant>();
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
             await Task.Delay(100);
-            await LoadSubscribers();
+            await LoadMerchants();
             StateHasChanged();
         }
     }
 
-    private async Task LoadSubscribers()
+    private void ViewHistory(int merchantId)
+    {
+        Navigation.NavigateTo($"admin/merchanthistory/view/{merchantId}");
+    }
+
+    private async Task LoadMerchants()
     {
 
         try
         {
-            Subscribers = await AS.GetSubscribersAsync();
+                Merchants = await AS.GetMerchantsAsync();
         }
-
                 catch (Exception ex)
         {
-            Notify.Error("Error retrieving subscribers", "Erreur");
-            Console.WriteLine($"Error loading Subscribers: {ex.Message}");
+            Notify.Error($"Error retrieving merchants", "Erreur");
+            Console.WriteLine($"Error loading Merchants: {ex.Message}");
         }
-    }
-    private void ViewSubscription(int subscriberId)
-    {
-        Navigation.NavigateTo($"admin/subscriber/subscription/view/{subscriberId}");
-    }
-        private void UpdateWallet(int idWallet)
+
+
+
+}
+    private void UpdateWallet(int idWallet)
     {
         IdWallet = idWallet;
         JSRuntime.InvokeVoidAsync("showModal", "confirmModal");
@@ -133,7 +134,7 @@
             if(update)
             {
                 Notify.Success("Mise à jour du sode effectuée avec succès","SUCCESS");
-                await LoadSubscribers();
+                await LoadMerchants();
                 StateHasChanged();
             }
 

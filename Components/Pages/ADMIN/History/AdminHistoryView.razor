@@ -1,0 +1,70 @@
+@page "/admin/{type}history/view/{Id:int}"
+@using blazor_giftcard.Services
+@using blazor_giftcard.Models
+@inject ToastrService Notify
+@inject AdminService AS
+@inject SubscriberService SS
+@inject UserContextService UserContext
+<head>
+<link rel="stylesheet" href="ListView.css" />
+</head>
+<PageTitle>Historique</PageTitle>
+<h3>Historique</h3>
+<div class="listview-container">
+    <table class="listview-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Action</th>
+                <th>Montant</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var history in Histories)
+            {
+                <tr>
+                    <td>@history.Id</td>
+                    <td>@history.Action</td>
+                    <td>@history.Montant</td>
+                    <td>@history.Date</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<Redirection Url="@RedirectionUrl" />
+@code
+{
+    [Parameter]
+    public int Id { get; set; }
+    [Parameter]
+    public string type { get; set; }
+    private List<Historique> Histories = new List<Historique>();
+    private string RedirectionUrl => $"admin/{type}history/view/{Id}";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadHistories();
+        StateHasChanged();
+    }
+
+    private async Task LoadHistories()
+    {
+        try
+        {
+            if (type == "beneficiary")
+                Histories = (await AS.GetBeneficiaryHistoriesAsync(Id)).Cast<Historique>().ToList();
+            else if (type == "subscriber")
+                Histories = (await SS.GetSubscriberHistoriesAsync(Id)).Cast<Historique>().ToList();
+            else if (type == "merchant")
+                Histories = (await AS.GetMerchantHistoriesAsync(Id)).Cast<Historique>().ToList();
+        }
+        catch (Exception ex)
+        {
+            Notify.Error("Error retrieving histories", "error");
+            Console.WriteLine($"Error loading histories: {ex.Message}");
+        }
+    }
+}
