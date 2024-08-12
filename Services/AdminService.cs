@@ -94,7 +94,6 @@ namespace blazor_giftcard.Services
             try
             {
                 var user = await GetUserAsync(id);
-                Console.WriteLine("id:"+user.Id);
                 user.IsActive = state;
                 _logger.LogInformation($"Updating user with ID {id}.");
                 var response = await _authClient.PutAsJsonAsync($"User/{id}",new{Id=user.Id,IsActive=state});
@@ -188,7 +187,6 @@ namespace blazor_giftcard.Services
                 {
                     var root = document.RootElement;
                     var subscribersElement = root.GetProperty("$values");
-                    Console.WriteLine(response);
                     var options = new JsonSerializerOptions
                     {
                         PropertyNameCaseInsensitive = true
@@ -215,12 +213,10 @@ namespace blazor_giftcard.Services
                 {
                     var root = document.RootElement;
                     var beneficiariesElement = root.GetProperty("$values");
-                    Console.WriteLine(response);
                     var options = new JsonSerializerOptions
                     {
                         PropertyNameCaseInsensitive = true
                     };
-
                     var beneficiaries = JsonSerializer.Deserialize<List<Beneficiary>>(beneficiariesElement.GetRawText(), options);
                     _logger.LogInformation("Successfully retrieved beneficiaries.");
                     return beneficiaries;
@@ -242,7 +238,6 @@ namespace blazor_giftcard.Services
                 {
                     var root = document.RootElement;
                     var merchantsElement = root.GetProperty("$values");
-                    Console.WriteLine(response);
                     var options = new JsonSerializerOptions
                     {
                         PropertyNameCaseInsensitive = true
@@ -299,12 +294,12 @@ namespace blazor_giftcard.Services
             }
         }
 
-        public async Task<bool> UpdateWalletAsync(int idWallet , double Montant)
+        public async Task<bool> UpdateWalletAsync(int idWallet , double Montant , string type, int Id)
         {
             try
             {
                 _logger.LogInformation($"Updating wallet with ID {idWallet}.");
-                var response = await _authClient.PutAsJsonAsync($"Wallet/{idWallet}", new { Montant = Montant });
+                var response = await _authClient.PutAsJsonAsync($"Wallet/{type}/{idWallet}", new { Montant = Montant , Id=Id});
                 response.EnsureSuccessStatusCode();
                 _logger.LogInformation($"Successfully updated wallet with ID {idWallet}.");
                 return true;

@@ -47,13 +47,13 @@
                             {
                                 <td>
                                 <span style="margin-right:6px;">@merchant.MerchantWallet.Solde @merchant.MerchantWallet.Devise</span>
-                                    <a href="javascript:void(0)" @onclick="() => UpdateWallet(merchant.MerchantWallet.Id)">
+                                    <a href="javascript:void(0)" @onclick="() => UpdateWallet(merchant.MerchantWallet.Id,merchant.Id)">
                                     <i class="bi bi-pencil-square"></i>
                                 </a>
                                 </td>
                             }
                             else{
-                                <td>Indisponible</td>
+                                <td><i class="bi bi-exclamation-octagon"></i></td>
                             }
                             <td>
                                 <a href="javascript:void(0)" @onclick="() => ViewHistory(merchant.Id)" style="margin-left: 10px;">
@@ -75,6 +75,7 @@
 {
     private double Montant ;
     private int IdWallet ;
+    private int IdMerchant ;
     private List<Merchant> Merchants =new List<Merchant>();
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -107,9 +108,10 @@
 
 
 }
-    private void UpdateWallet(int idWallet)
+    private void UpdateWallet(int idWallet,int idMerchant)
     {
         IdWallet = idWallet;
+        IdMerchant = idMerchant;
         JSRuntime.InvokeVoidAsync("showModal", "confirmModal");
     }
         private async Task HandleConfirm(bool confirmed)
@@ -130,7 +132,7 @@
         {
             Montant = number;
             JSRuntime.InvokeVoidAsync("hideModal", "genericInputModal");
-            var update = await AS.UpdateWalletAsync(IdWallet,Montant);
+            var update = await AS.UpdateWalletAsync(IdWallet,Montant,"merchant",IdMerchant);
             if(update)
             {
                 Notify.Success("Mise à jour du sode effectuée avec succès","SUCCESS");

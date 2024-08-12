@@ -34,6 +34,7 @@
                         <th>Nom</th>
                         <th>Solde</th>
                         <th>Souscriptions</th>
+                        <th>Historique</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -46,18 +47,23 @@
                             @if(subscriber.SubscriberWallet!=null)
                             {
                                 <td>
-                                <span style="margin-right:6px;">@subscriber.SubscriberWallet.Solde @subscriber.SubscriberWallet.Devise</span>
-                                    <a href="javascript:void(0)" @onclick="() => UpdateWallet(subscriber.SubscriberWallet.Id)">
+                                <span style="margin-right:6px;"> @subscriber.SubscriberWallet.Solde @subscriber.SubscriberWallet.Devise</span>
+                                    <a href="javascript:void(0)" @onclick="() => UpdateWallet(subscriber.SubscriberWallet.Id,subscriber.Id)">
                                     <i class="bi bi-pencil-square"></i>
                                 </a>
                                 </td>
 
                             }
                             else{
-                                <td>Indisponible</td>
+                                <td><i class="bi bi-exclamation-octagon"></i></td>
                             }
                                 <td>
                                 <a href="javascript:void(0)" @onclick="() => ViewSubscription(subscriber.Id)" style="margin-left: 10px;">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </td>
+                            <td>
+                                <a href="javascript:void(0)" @onclick="() => ViewHistory(subscriber.Id)" style="margin-left: 10px;">
                                     <i class="bi bi-eye"></i>
                                 </a>
                             </td>
@@ -77,6 +83,7 @@
 {
     private double Montant ;
     private int IdWallet ;
+    private int IdSubscriber ;
     private List<Subscriber> Subscribers =new List<Subscriber>();
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -106,9 +113,14 @@
     {
         Navigation.NavigateTo($"admin/subscriber/subscription/view/{subscriberId}");
     }
-        private void UpdateWallet(int idWallet)
+        private void ViewHistory(int merchantId)
+    {
+        Navigation.NavigateTo($"admin/subscriberhistory/view/{merchantId}");
+    }
+        private void UpdateWallet(int idWallet,int idSubscriber)
     {
         IdWallet = idWallet;
+        IdSubscriber=IdSubscriber;
         JSRuntime.InvokeVoidAsync("showModal", "confirmModal");
     }
         private async Task HandleConfirm(bool confirmed)
@@ -129,7 +141,7 @@
         {
             Montant = number;
             JSRuntime.InvokeVoidAsync("hideModal", "genericInputModal");
-            var update = await AS.UpdateWalletAsync(IdWallet,Montant);
+            var update = await AS.UpdateWalletAsync(IdWallet,Montant,"subscriber",IdSubscriber);
             if(update)
             {
                 Notify.Success("Mise à jour du sode effectuée avec succès","SUCCESS");

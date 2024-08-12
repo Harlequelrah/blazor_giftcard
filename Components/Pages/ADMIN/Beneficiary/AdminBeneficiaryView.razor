@@ -42,20 +42,27 @@
             {
                 <tr>
                     <td>@beneficiary.Id</td>
-                    <td>@beneficiary.IdUser</td>
+                    @if(beneficiary.IdUser!=null)
+                    {
+                        <td>@beneficiary.IdUser</td>
+                    }
+                    else
+                    {
+                        <td><i class="bi bi-exclamation-octagon"></i></td>
+                    }
                     <td>@beneficiary.Nom</td>
                     <td>@beneficiary.Prenom</td>
                     @if(beneficiary.BeneficiaryWallet!=null)
                             {
                                 <td>
-                                <span style="margin-right:6px;">@beneficiary.BeneficiaryWallet.Solde @beneficiary.BeneficiaryWallet.Devise</span>
-                                    <a href="javascript:void(0)" @onclick="() => UpdateWallet(beneficiary.BeneficiaryWallet.Id)">
+                                <span style="margin-right:6px;"> @beneficiary.BeneficiaryWallet.Solde @beneficiary.BeneficiaryWallet.Devise</span>
+                                    <a href="javascript:void(0)" @onclick="() => UpdateWallet(beneficiary.BeneficiaryWallet.Id,beneficiary.Id)">
                                     <i class="bi bi-pencil-square"></i>
                                 </a>
                                 </td>
                             }
                             else{
-                                <td>Indisponible</td>
+                                <td><i class="bi bi-exclamation-octagon"></i></td>
                             }
                             <td>@beneficiary.TelephoneNumero</td>
                     <td>
@@ -87,6 +94,7 @@
 @code
 {
     private double Montant ;
+    private int IdBeneficiary;
     private int IdWallet ;
     private List<Beneficiary> Beneficiaries =new List<Beneficiary>();
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -117,9 +125,10 @@
             Console.WriteLine($"Error loading Beneficiaries: {ex.Message}");
         }
     }
-        private void UpdateWallet(int idWallet)
+        private void UpdateWallet(int idWallet,int idBeneficiary)
     {
         IdWallet = idWallet;
+        IdBeneficiary=idBeneficiary;
         JSRuntime.InvokeVoidAsync("showModal", "confirmModal");
     }
         private async Task HandleConfirm(bool confirmed)
@@ -136,11 +145,12 @@
     }
     private async Task HandleModalSubmit(string input)
     {
+        Console.WriteLine("the input"+input);
         if (double.TryParse(input, out double number))
         {
             Montant = number;
             JSRuntime.InvokeVoidAsync("hideModal", "genericInputModal");
-            var update = await AS.UpdateWalletAsync(IdWallet,Montant);
+            var update = await AS.UpdateWalletAsync(IdWallet,Montant,"beneficiary",IdBeneficiary);
             if(update)
             {
                 Notify.Success("Mise à jour du sode effectuée avec succès","SUCCESS");
