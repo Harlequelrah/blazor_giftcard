@@ -26,9 +26,12 @@ main {
 }
 
 .footer {
+
     background-color: #333333; /* Gris foncé pour une apparence élégante */
     max-height: 400px;
-    
+    width: 100%;
+    margin-top: auto; /* Pousse le footer vers le bas */
+    padding: 20px 0;
 }
 
 a {
