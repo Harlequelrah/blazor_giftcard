@@ -14,7 +14,7 @@
 
 <PageTitle>GoChap Packages</PageTitle>
 <h3>Liste des Packages</h3>
-
+<button style="border-radius:6px;margin: 4px 4px;" @onclick="()=>AddPackage()">Ajouter un Nouveau Package</button>
 <div class="container">
     @if (Packages == null)
     {
@@ -100,6 +100,11 @@
             Notify.Error($"Error retrieving packages: {ex.Message}", "ERROR");
             Console.WriteLine($"Error loading Packages: {ex.Message}");
         }
+    }
+        private void AddPackage()
+    {
+        Navigation.NavigateTo($"admin/package/add");
+
     }
     private void ViewSubscription(int packageId)
     {

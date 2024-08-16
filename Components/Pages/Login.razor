@@ -43,17 +43,19 @@
             await AuthStateProvider.Login(user.Email, user.Password);
             var authState = await AuthStateProvider.GetAuthenticationStateAsync();
             var current_user = authState.User;
+            if (current_user?.Identity == null || !current_user.Identity.IsAuthenticated)
+            {
+            Notify.Error("Échec de la connexion. Veuillez vérifier vos identifiants.","ERREUR");
+            }
             var role  = current_user.FindFirst("role")?.Value ?? "";
             if (role=="SUBSCRIBER")
             {
-                Notify.Success("Bienvenue cher Souscripteur");
-                await Task.Delay(200);
+                Notify.Success("Bienvenue cher Souscripteur","SUCCESS");
                 Navigation.NavigateTo("/view/package");
             }
             else if (role=="ADMIN")
             {
-                Notify.Success("Bienvenue cher Admin");
-                await Task.Delay(200);
+                Notify.Success("Bienvenue cher Admin","SUCCESS");
                 Navigation.NavigateTo("/admin/user/view");
             }
 

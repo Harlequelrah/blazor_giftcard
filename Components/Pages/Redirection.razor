@@ -5,6 +5,7 @@
 @inject ToastrService Notify
 @using blazor_giftcard.Services
 @using blazor_giftcard.Models
+@implements IAsyncDisposable
 @inject CustomAuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager Navigation
 @using Microsoft.JSInterop
@@ -96,6 +97,13 @@ protected override async Task OnInitializedAsync()
     {
         _locationChangedHandler?.Dispose();
     }
+    public async ValueTask DisposeAsync()
+{
+    if (AuthenticationStateProvider != null)
+    {
+        await AuthenticationStateProvider.DisposeAsync();
+    }
+}
 }
 
 

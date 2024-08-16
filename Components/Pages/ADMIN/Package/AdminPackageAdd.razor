@@ -1,1 +1,63 @@
 @page "/admin/package/add"
+@using Microsoft.JSInterop
+@using blazor_giftcard.Models
+@using blazor_giftcard.Services
+@inject IJSRuntime JSRuntime
+@inject NavigationManager Navigation
+@inject AdminService AS
+@inject ToastrService Notify
+
+<head>
+    <link rel="stylesheet" href="Layout.css" />
+    <title>Ajouter un Package</title>
+</head>
+
+<div class="container">
+    <EditForm Model="package" OnValidSubmit="RegisterPackageAsync">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <div>
+            <InputText @bind-Value="package.NomPackage" placeholder="Nom du Package" />
+        </div>
+        <div>
+            <InputNumber @bind-Value="package.NbrJour" placeholder="Nombre de Jours" />
+        </div>
+        <div>
+            <InputNumber @bind-Value="package.Budget" placeholder="Budget" />
+        </div>
+        <div>
+            <InputNumber @bind-Value="package.Prix" placeholder="Prix" />
+        </div>
+        <div>
+            <InputText @bind-Value="package.Description" placeholder="Description" />
+        </div>
+        <button type="submit">Enregistrer</button>
+    </EditForm>
+
+    <div class="drop drop-1">
+        <p>Remplissez le formulaire suivant pour enregistrer un nouvel Package</p>
+    </div>
+    <div class="drop drop-2"></div>
+    <div class="drop drop-4"></div>
+    <div class="drop drop-5"></div>
+</div>
+
+@code {
+    private PackageDto package = new PackageDto();
+
+    private async Task RegisterPackageAsync()
+    {
+        try
+        {
+            await AS.RegisterPackageAsync(package);
+            Notify.Success("L'enregistrement s'est déroulé avec succès", "SUCCESS");
+            package = new PackageDto();
+            Navigation.NavigateTo("/admin/package/view"); // Redirection après succès
+        }
+        catch (Exception ex)
+        {
+            Notify.Error("Erreur lors de l'enregistrement du package", "ERROR");
+            Console.WriteLine($"Error registering package : {ex.Message}");
+        }
+    }
+}

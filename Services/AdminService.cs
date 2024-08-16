@@ -419,6 +419,57 @@ namespace blazor_giftcard.Services
                 return new List<BeneficiaryHistory>();
             }
         }
+         public async Task<Admin> RegisterAdminAsync(Admin admin)
+        {
+            try
+            {
+                _logger.LogInformation($"Registering Admin");
+                var response = await _authClient.PostAsJsonAsync($"User/register/admin",admin);
+                response.EnsureSuccessStatusCode();
+                var registeredAdmin= await response.Content.ReadFromJsonAsync<Admin>();
+                _logger.LogInformation($"Successfully registered admin");
+                return registeredAdmin;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error registering admin {ex.Message}");
+                return null;
+            }
+        }
+        public async Task<Role> RegisterRoleAsync(RoleDto role)
+        {
+            try
+            {
+                _logger.LogInformation($"Registering Role");
+                var response = await _authClient.PostAsJsonAsync($"Role",role);
+                response.EnsureSuccessStatusCode();
+                var registeredRole= await response.Content.ReadFromJsonAsync<Role>();
+                _logger.LogInformation($"Successfully registered role");
+                return registeredRole;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error registering role {ex.Message}");
+                return null;
+            }
+        }
+        public async Task<Package> RegisterPackageAsync(PackageDto package)
+        {
+            try
+            {
+                _logger.LogInformation($"Registering Package");
+                var response = await _authClient.PostAsJsonAsync("Package",package);
+                response.EnsureSuccessStatusCode();
+                var registeredPackage= await response.Content.ReadFromJsonAsync<Package>();
+                _logger.LogInformation($"Successfully registered role");
+                return registeredPackage;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error registering package {ex.Message}");
+                return null;
+            }
+        }
 
 
 

@@ -14,7 +14,7 @@
 
 <PageTitle>GoChap Roles</PageTitle>
 <h3>Liste des Roles</h3>
-
+<button style="border-radius:6px;margin: 4px 4px;" @onclick="()=>AddRole()">Ajouter un Nouveau Role</button>
 <div class="container">
     @if (Roles == null)
     {
@@ -57,7 +57,10 @@
             </table>
         </div>
     }
+
 </div>
+
+
 
 <ConfirmModal Title="Souhaitez vous vraiment supprimer ce role?" OnConfirm="DeleteConfirm" OnClose="CloseConfirmation" />
 
@@ -84,6 +87,12 @@
             Notify.Error($"Error retrieving roles: {ex.Message}", "ERROR");
             Console.WriteLine($"Error loading Roles: {ex.Message}");
         }
+    }
+
+    private void AddRole()
+    {
+        Navigation.NavigateTo($"admin/role/add");
+
     }
 
     private void UpdateRole(int roleId)

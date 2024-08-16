@@ -5,7 +5,7 @@ $(document).ready(function() {
         "newestOnTop": true,
         "progressBar": true,
         "positionClass": "toast-container",
-        "preventDuplicates": false,
+        "preventDuplicates": true,
         "onclick": null,
         "showDuration": "300",
         "hideDuration": "1000",
@@ -16,29 +16,38 @@ $(document).ready(function() {
         "showMethod": "fadeIn",
         "hideMethod": "fadeOut"
     };
+
+    const originalToastr = {
+        error: toastr.error,
+        success: toastr.success,
+        warning: toastr.warning,
+        info: toastr.info
+    };
+
     toastr.error = function(message, title, options) {
         options = options || {};
         options.iconClass = 'alert alert-danger';
-        toastr.error(message, title, options);
+        return originalToastr.error.call(this, message, title, options);
     };
 
     toastr.success = function(message, title, options) {
         options = options || {};
         options.iconClass = 'alert alert-success';
-        toastr.success(message, title, options);
+        return originalToastr.success.call(this, message, title, options);
     };
 
     toastr.warning = function(message, title, options) {
         options = options || {};
         options.iconClass = 'alert alert-warning';
-        toastr.warning(message, title, options);
+        return originalToastr.warning.call(this, message, title, options);
     };
 
-    toastr.info = function(message, title, options) {
+    toastr.info = function(message, title,options) {
         options = options || {};
         options.iconClass = 'alert alert-info';
-        toastr.info(message, title, options);
+        return originalToastr.info.call(this, message, title, options);
     };
+
     window.showModal = function (modalId) {
         $('#' + modalId).show();
     };

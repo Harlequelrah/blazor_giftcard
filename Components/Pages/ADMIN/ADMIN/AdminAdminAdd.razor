@@ -1,0 +1,67 @@
+@page "/admin/admin/add"
+@using Microsoft.JSInterop
+@using blazor_giftcard.Models
+@using blazor_giftcard.Services
+@inject IJSRuntime JSRuntime
+@rendermode InteractiveServer
+@inject NavigationManager Navigation
+@inject UserContextService UserContext
+@inject AdminService AS
+@inject ToastrService Notify
+
+<head>
+
+<link rel="stylesheet" href="Layout.css" />
+</head>
+<PageTitle>+Admin</PageTitle>
+
+
+<div class="container">
+<EditForm Model="admin" OnValidSubmit="RegisterAdminAsync" FormName="RegisterAdminForm" >
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div>
+        <InputText @bind-Value="admin.Email" placeholder="Email" />
+    </div>
+    <div>
+        <InputText @bind-Value="admin.NomComplet"  placeholder="Nom et Prenoms" />
+    </div>
+    <div>
+        <InputText @bind-Value="admin.Password" type="password" placeholder="Password" />
+    </div>
+    <div>
+        <InputText @bind-Value="admin.Adresse" placeholder="Adresse" />
+    </div>
+        <div>
+        <InputText @bind-Value="admin.Telephone"  placeholder="Telephone"/>
+    </div>
+    <button type="submit" >Enregistrer</button>
+</EditForm>
+  <div class="drop drop-1">
+  <p>Remplissez le formulaire suivant pour enregistrer un nouvel Administrateur</p>
+  </div>
+  <div class="drop drop-2"></div>
+  <div class="drop drop-4"></div>
+  <div class="drop drop-5"></div>
+</div>
+
+<Redirection Url="admin/admin/add" />
+
+@code {
+    Admin admin = new Admin();
+    private async Task RegisterAdminAsync()
+    {
+        try
+            {
+                await AS.RegisterAdminAsync(admin);
+                Notify.Success("L'enregistrement s'est déroulé avec succès", "SUCCESS");
+                admin = new Admin();
+            }
+            catch (Exception ex)
+            {
+                Notify.Error("Erreur lors de l'enregistrement de l'administrateur", "ERROR");
+                Console.WriteLine($"Error registering admin : {ex.Message}");
+            }
+
+    }
+}
