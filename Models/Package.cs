@@ -1,6 +1,6 @@
 
 using System;
-
+using System.ComponentModel.DataAnnotations;
 namespace blazor_giftcard.Models
 {
     public class Package

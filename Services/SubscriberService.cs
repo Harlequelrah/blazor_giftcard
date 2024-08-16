@@ -43,7 +43,6 @@ namespace blazor_giftcard.Services
                 {
                     var root = document.RootElement;
                     var packagesElement = root.GetProperty("$values");
-                    Console.WriteLine(packagesElement);
                     var options = new JsonSerializerOptions
                     {
                         PropertyNameCaseInsensitive = true

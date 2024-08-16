@@ -22,11 +22,27 @@
         <div>
             <InputNumber @bind-Value="package.NbrJour" placeholder="Nombre de Jours" />
         </div>
+
         <div>
-            <InputNumber @bind-Value="package.Budget" placeholder="Budget" />
+                @if(package.Budget==0)
+        {
+            <span style="color:#999;position:relative;left:50px;z-index:999;margin-right:-50px;">Budget</span>
+        }
+        <InputNumber @bind-Value="package.Budget"  />
         </div>
         <div>
-            <InputNumber @bind-Value="package.Prix" placeholder="Prix" />
+        @if(package.Prix==0)
+        {
+            <span style="color: #999;position:relative;left:50px;margin-right:-25px;z-index:999;">Prix</span>
+        }
+            <InputNumber @bind-Value="package.Prix" />
+        </div>
+        <div>
+        @if(package.MontantBase==0)
+        {
+            <span style="color: #999;position:relative;left:50px;margin-right:-120px;z-index:999;">Montant de Base</span>
+        }
+        <InputNumber @bind-Value="package.MontantBase"   />
         </div>
         <div>
             <InputText @bind-Value="package.Description" placeholder="Description" />

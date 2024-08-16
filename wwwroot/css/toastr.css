@@ -1,14 +1,39 @@
+/* Positionnement du conteneur de notifications */
 .toast-container {
     position: fixed;
-    top: 18%; /* Positionner verticalement au centre */
-    left: 57%; /* Positionner horizontalement au centre */
-    transform: translate(-50%, -50%);
+    top: 18%; /* Ajustez selon vos préférences */
+    left: 50%; /* Centrage horizontal */
+    transform: translateX(-50%); /* Correction du centrage horizontal */
+    z-index: 1050; /* Assure que les notifications sont au-dessus des autres éléments */
 }
 
+/* Style des notifications */
 .toast {
     font-family: Arial, sans-serif;
-    border-radius: 10px;
-    padding: 10px;
-    /* background: rgba(0, 0, 0, 0.8);  Exemple de fond sombre
-    color: #fff; Exemple de texte blanc */
+    border-radius: 0.25rem; /* Utilisez la bordure arrondie de Bootstrap */
+    padding: 1rem; /* Padding pour l'espacement */
+    background-color: rgba(0, 0, 0, 0.8); /* Fond sombre par défaut */
+    color: #fff; /* Texte blanc par défaut */
+    margin: 0.5rem; /* Espace entre les notifications */
+}
+
+/* Styles pour les types spécifiques de notifications */
+.toast.alert-danger { /* Erreurs */
+    background-color: #f8d7da; /* Fond rouge pâle */
+    color: #721c24; /* Texte rouge foncé */
+}
+
+.toast.alert-success { /* Succès */
+    background-color: #d4edda; /* Fond vert pâle */
+    color: #155724; /* Texte vert foncé */
+}
+
+.toast.alert-warning { /* Avertissements */
+    background-color: #fff3cd; /* Fond jaune pâle */
+    color: #856404; /* Texte jaune foncé */
+}
+
+.toast.alert-info { /* Informations */
+    background-color: #d1ecf1; /* Fond bleu pâle */
+    color: #0c5460; /* Texte bleu foncé */
 }
