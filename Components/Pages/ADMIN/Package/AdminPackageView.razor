@@ -50,7 +50,7 @@
                             <td>@package.Id</td>
                             <td>@package.NomPackage</td>
                             <td>@package.Description</td>
-                            <td> @(package.NbrJour.HasValue ? package.NbrJour.ToString() : "Illimité")</td>
+                            <td> @(package.NbrJour.HasValue ? package.NbrJour.ToString()+" Jrs" : "Illimité")</td>
                             <td>@package.Budget</td>
                             <td>@package.Prix</td>
                             <td>@package.MontantBase</td>
@@ -85,7 +85,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await Task.Delay(200);
+        await Task.Delay(100);
         await LoadPackages();
     }
 

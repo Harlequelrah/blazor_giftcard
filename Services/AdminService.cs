@@ -24,8 +24,7 @@ namespace blazor_giftcard.Services
             _logger = logger;
         }
 
-        // Get a single package by ID
-        public async Task<Package> GetPackageAsync(int id)
+        public async Task<Package> GetPackageByIdAsync(int id)
         {
             try
             {
@@ -89,6 +88,23 @@ namespace blazor_giftcard.Services
                 return false;
             }
         }
+         public async Task<bool> UpdateRoleAsync(int id, Role role)
+        {
+            try
+            {
+                _logger.LogInformation($"Updating role with ID {id}.");
+                var response = await _authClient.PutAsJsonAsync($"Role/{id}", role);
+                response.EnsureSuccessStatusCode();
+                _logger.LogInformation($"Successfully updated role with ID {id}.");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error updating role with ID {id}: {ex.Message}");
+                return false;
+            }
+        }
+
          public async Task<bool> UpdateUserAsync(int id,bool state)
         {
             try
@@ -259,7 +275,7 @@ namespace blazor_giftcard.Services
 
 
         // Get a role by ID
-        public async Task<Role> GetRoleAsync(int id)
+        public async Task<Role> GetRoleByIdAsync(int id)
         {
             try
             {

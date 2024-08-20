@@ -1,17 +1,62 @@
 @page "/admin/role/update/{RoleId:int}"
+@using Microsoft.JSInterop
 @using blazor_giftcard.Models
+@using blazor_giftcard.Services
+@inject IJSRuntime JSRuntime
+@rendermode InteractiveServer
+@inject NavigationManager Navigation
+@inject UserContextService UserContext
 @inject AdminService AS
-Id : @Role.Id
-Nom !! : @Role.RoleNom
+@inject ToastrService Notify
+<head>
+<link rel="stylesheet" href="Layout.css" />
+</head>
+<PageTitle>UpdateRole</PageTitle>
+
+
+<div class="container">
+<EditForm Model="role" OnValidSubmit="UpdateRoleAsync" FormName="RegisterRoleForm" Enhance="true">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div>
+        <InputText @bind-Value="role.RoleNom" placeholder="Nom du Role" />
+    </div>
+    <button type="submit" >Enregistrer</button>
+</EditForm>
+  <div class="drop drop-1">
+  <p>Remplissez le formulaire suivant pour enregistrer un nouvel Role</p>
+  </div>
+  <div class="drop drop-2"></div>
+  <div class="drop drop-4"></div>
+  <div class="drop drop-5"></div>
+</div>
+<Redirection Url="@RedirectionUrl" />
+
 @code
 {
     [Parameter]
     public int RoleId { get; set; }
-    private Role Role = new Role();
+    private Role role = new Role();
+    private string RedirectionUrl => $"admin/role/update/{RoleId}";
 
     protected override async Task OnInitializedAsync()
     {
-        await Task.Delay(200);
-        Role=await AS.GetRoleAsync(RoleId);
+        role = await AS.GetRoleByIdAsync(RoleId);
+    }
+    private async Task UpdateRoleAsync()
+    {
+        try
+            {
+                await AS.UpdateRoleAsync(RoleId,role);
+                Notify.Success("La mise à jour s'est déroulée avec succès", "SUCCESS");
+                role = new Role();
+                Navigation.NavigateTo("/admin/role/view",true);
+            }
+            catch (Exception ex)
+            {
+                Notify.Error("Erreur lors de l'enregistrement du role", "ERROR");
+                Console.WriteLine($"Error updating role : {ex.Message}");
+            }
+
     }
 }
