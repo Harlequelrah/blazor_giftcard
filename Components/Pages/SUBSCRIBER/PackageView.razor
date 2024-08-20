@@ -62,18 +62,14 @@
     protected override async Task OnInitializedAsync()
     {
         await Task.Delay(200);
-        Console.WriteLine("Recherche de Packages...");
         await LoadPackages();
-        Console.WriteLine("Fin Recherche de Packages...");
     }
 
     private async Task LoadPackages()
     {
         try
         {
-            Console.WriteLine("Debut Recherche de Packages...");
             Packages = await SS.GetPackagesAsync();
-            Console.WriteLine("termine de recherche de Packages...");
         }
         catch (Exception ex)
         {
@@ -88,9 +84,10 @@
         Console.WriteLine($"Package: {packageIdToSubscribe}");
         JSRuntime.InvokeVoidAsync("showModal", "confirmModal");
     }
-    private void CloseConfirmation()
+    private async Task CloseConfirmation()
     {
         JSRuntime.InvokeVoidAsync("hideModal", "confirmModal");
+        await SubmitSubscription();
     }
 
     private async Task HandleConfirm(bool confirmed)
@@ -101,6 +98,7 @@
             JSRuntime.InvokeVoidAsync("showModal", "genericInputModal");
         }
     }
+
 
     private async Task HandleModalSubmit(string input)
     {
@@ -114,7 +112,11 @@
             Montant = null;
         }
         JSRuntime.InvokeVoidAsync("hideModal", "genericInputModal");
+        await SubmitSubscription();
 
+    }
+    private async Task SubmitSubscription()
+    {
         try
         {
             await SS.PostSubscriptionAsync(packageIdToSubscribe, Montant, UserContext.Subscriber.Id);
@@ -131,5 +133,6 @@
             Notify.Error("Erreur lors de la souscription", "ERROR");
             Console.WriteLine($"Error subscribing to Package {packageIdToSubscribe}: {ex.Message}");
         }
+
     }
 }
