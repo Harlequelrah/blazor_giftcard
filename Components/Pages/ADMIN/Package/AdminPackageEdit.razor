@@ -45,7 +45,7 @@
         <InputNumber @bind-Value="package.MontantBase"   />
         </div>
         <div>
-            <InputText @bind-Value="package.Description" placeholder="Description" />
+            <textarea @bind="package.Description" placeholder="Description" ></textarea>
         </div>
         <button type="submit">Enregistrer</button>
     </EditForm>

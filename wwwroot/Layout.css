@@ -1,6 +1,6 @@
 body {
   background: linear-gradient(45deg, #b3cde0, #006994);
-  
+
   font-family: Arial, sans-serif;
   align-items: center;
   justify-content: center;
@@ -36,7 +36,7 @@ form {
   -webkit-backdrop-filter: blur(10px);
   -moz-backdrop-filter: blur(10px);
   box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);
-  margin: auto;
+  margin: 2rem auto;
 }
 
 p {
@@ -201,4 +201,28 @@ input[type="button"] {
   color: #fff; /* Texte en blanc pour contraster avec le fond */
   font-weight: 500;
   font-size: 1rem;
+}
+textarea {
+  background: rgba(255, 255, 255, 0.9); /* Fond blanc légèrement opaque */
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  padding: 1rem; /* Marge intérieure pour plus de confort */
+  width: calc(100% - 2rem); /* Plus large que les inputs */
+  max-width: 350px; /* Taille maximale pour la largeur */
+  border-radius: 10px; /* Réduction du border-radius */
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  -moz-backdrop-filter: blur(5px);
+  box-shadow: 4px 4px 60px rgba(0, 0, 0, 0.2);
+  color: #333; /* Texte sombre pour la lisibilité */
+  font-weight: 500;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); /* Ombre légère pour le texte */
+  transition: all 0.3s;
+  margin-bottom: 1rem;
+  resize: vertical; /* Permet à l'utilisateur de redimensionner verticalement */
+}
+
+textarea:hover,
+textarea:focus {
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow: 4px 4px 60px 8px rgba(0, 0, 0, 0.2);
 }
