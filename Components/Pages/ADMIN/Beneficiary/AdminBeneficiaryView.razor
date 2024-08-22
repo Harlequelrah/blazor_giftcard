@@ -11,6 +11,11 @@
 </head>
 <PageTitle>Beneficiaries</PageTitle>
 <h3>Liste des Beneficiaires</h3>
+<div style="display:flex;flex-direction:row;">
+<button style="border-radius:6px;margin: 2px auto; padding :auto auto ;" @onclick="() =>  GetBeneficiariesWithHasGoChap(true)">Beneficiaires Utilisateur de GoChap</button>
+<button style="border-radius:6px;margin: 2px auto; padding :auto auto ;" @onclick="() =>  GetBeneficiariesWithHasGoChap(false)">Beneficiaires Non Utilisateur de GoChap</button>
+<button style="border-radius:6px;margin: 2px auto; padding :auto auto ;" @onclick="() =>  LoadBeneficiaries()">Tous les bénéficiaires</button>
+</div>
 <div class="listview-container">
     @if (Beneficiaries == null)
     {
@@ -96,7 +101,14 @@
     private double Montant ;
     private int IdBeneficiary;
     private int IdWallet ;
+    private bool Filter=true;
     private List<Beneficiary> Beneficiaries =new List<Beneficiary>();
+    private async Task GetBeneficiariesWithHasGoChap(bool HasGoChap)
+    {
+        Console.WriteLine($"Has Go Chap:{HasGoChap}");
+        Beneficiaries = await AS.GetBeneficiariesWithHasGoChapAsync(HasGoChap);
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)

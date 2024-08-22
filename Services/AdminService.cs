@@ -244,6 +244,31 @@ namespace blazor_giftcard.Services
                 return new List<Beneficiary>();
             }
         }
+        public async Task<List<Beneficiary>> GetBeneficiariesWithHasGoChapAsync(bool HasGoChap)
+        {
+            try
+            {
+                _logger.LogInformation("Getting beneficiaries.");
+                var response = await _authClient.GetStringAsync($"Beneficiary/hasgochap/{HasGoChap}");
+                using (var document = JsonDocument.Parse(response))
+                {
+                    var root = document.RootElement;
+                    var beneficiariesElement = root.GetProperty("$values");
+                    var options = new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    };
+                    var beneficiaries = JsonSerializer.Deserialize<List<Beneficiary>>(beneficiariesElement.GetRawText(), options);
+                    _logger.LogInformation("Successfully retrieved beneficiaries.");
+                    return beneficiaries;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error retrieving Beneficiaries: {ex.Message}");
+                return new List<Beneficiary>();
+            }
+        }
         public async Task<List<Merchant>> GetMerchantsAsync()
         {
             try
