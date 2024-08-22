@@ -38,7 +38,8 @@
                         <th>Telephone</th>
                         <th>Date Inscription</th>
                         <th>Adresse</th>
-                        <th>Actif/Inactif</th>
+                        <th>Etat</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -56,6 +57,8 @@
                             @if(user.IsActive)
                             {
                                 <td><i class="bi bi-check-circle"></i>
+                                </td>
+                                <td>
 
                                     <button class="btn btn-danger"  @onclick="() => UpdateUser(user.Id,false)">
                                     <i class="bi bi-x-circle"></i>
@@ -64,7 +67,8 @@
                             }
                             else
                             {
-                                <td><i class="bi bi-x-circle"></i>
+                                <td><i class="bi bi-x-circle"></i></td>
+                                <td>
                                     <button class="btn btn-success" @onclick="() => UpdateUser(user.Id,true)" >
                                         <i class="bi bi-check-circle"></i>
                                     </button>

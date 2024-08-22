@@ -40,6 +40,7 @@
 
         try
         {
+            Notify.Info("La connexion est en cours;Veuillez patienter quelques instants","Information");
             await AuthStateProvider.Login(user.Email, user.Password);
             var authState = await AuthStateProvider.GetAuthenticationStateAsync();
             var current_user = authState.User;
