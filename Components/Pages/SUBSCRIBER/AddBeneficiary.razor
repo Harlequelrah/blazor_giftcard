@@ -86,6 +86,7 @@ private async Task ShowConfirmModal()
     {
         try
             {
+                Notify.Info("L'enregistrement est en cours .Veuillez patienter quelques instants.","Information");
                 await SS.RegisterBeneficiaryAsync(UserContext.Subscriber.Id, Montant, beneficiary);
                 Notify.Success("L'enregistrement s'est déroulé avec succès", "SUCCESS");
                 beneficiary = new BeneficiaryDto();

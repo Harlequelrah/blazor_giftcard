@@ -119,6 +119,7 @@
     {
         try
         {
+            Notify.Info("La souscription est en cours .Veuillez patienter quelques instants .","Information");
             await SS.PostSubscriptionAsync(packageIdToSubscribe, Montant, UserContext.Subscriber.Id);
             Notify.Success("Votre souscription s'est déroulée avec succès", "SUCCESS");
             UserContext.Subscriber = await UserContext.GetSubscriberAsync(UserContext.Subscriber.IdUser);
