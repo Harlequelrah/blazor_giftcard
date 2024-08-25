@@ -7,6 +7,7 @@
 <head>
 
 <link rel="stylesheet" href="Layout.css" />
+
 </head>
 <PageTitle>Login</PageTitle>
 
@@ -18,8 +19,11 @@
     <div>
         <InputText @bind-Value="user.Email" placeholder="Email"  />
     </div>
-    <div>
-        <InputText @bind-Value="user.Password" type="password" placeholder="Password" />
+    <div class="password-container">
+        <InputText @bind-Value="user.Password" class="password-input" type="@(showPassword ? "text" : "password")" placeholder="Password" />
+        <button type="button" @onclick="TogglePasswordVisibility" class="password-toggle-btn">
+            <i class="bi @(showPassword ? "bi-eye-slash" : "bi-eye")"></i>
+        </button>
     </div>
     <button type="submit">Login</button>
 </EditForm>
@@ -33,6 +37,12 @@
 
 </div>
 @code {
+        private bool showPassword = false;
+
+    private void TogglePasswordVisibility()
+    {
+        showPassword = !showPassword;
+    }
     [SupplyParameterFromForm]
     private User user { get; set; } = new User();
     private async Task HandleLogin()

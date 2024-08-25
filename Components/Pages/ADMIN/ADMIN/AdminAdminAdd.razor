@@ -27,7 +27,10 @@
         <InputText @bind-Value="admin.NomComplet"  placeholder="Nom et Prenoms" />
     </div>
     <div>
-        <InputText @bind-Value="admin.Password" type="password" placeholder="Password" />
+        <InputText @bind-Value="admin.Password"  class="password-input" type="@(showPassword ? "text" : "password")"  placeholder="Password" />
+        <button type="button" @onclick="TogglePasswordVisibility" class="password-toggle-btn">
+            <i class="bi @(showPassword ? "bi-eye-slash" : "bi-eye")"></i>
+        </button>
     </div>
     <div>
         <InputText @bind-Value="admin.Adresse" placeholder="Adresse" />

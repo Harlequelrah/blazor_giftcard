@@ -33,7 +33,10 @@
         <InputText @bind-Value="user.Email" placeholder="Email" />
     </div>
     <div>
-        <InputText @bind-Value="user.Password" type="password" placeholder="Password" />
+        <InputText @bind-Value="user.Password" class="password-input" type="@(showPassword ? "text" : "password")" placeholder="Password" />
+                <button type="button" @onclick="TogglePasswordVisibility" class="password-toggle-btn">
+            <i class="bi @(showPassword ? "bi-eye-slash" : "bi-eye")"></i>
+        </button>
     </div>
       <div>
         <InputText @bind-Value="user.Adresse" placeholder="Adresse" />
@@ -64,12 +67,12 @@
     private async Task HandleRegistration()
     {
         errorMessages.Clear(); // Clear previous error messages
-
+        Notify.Info("L'enregistrement est en cours,Veuillez patienter quelques instants","Information");
         var response = await Http.PostAsJsonAsync("http://localhost:5107/api/User/register/subscriber", user);
         if (response.IsSuccessStatusCode)
         {
             Notify.Success("Votre enregistrement s'est déroulé avec succès");
-            await Task.Delay(200);
+            await Task.Delay(50);
             Navigation.NavigateTo("/login");
         }
         else

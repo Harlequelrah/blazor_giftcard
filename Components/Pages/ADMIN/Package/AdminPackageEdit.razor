@@ -75,7 +75,7 @@
             await AS.UpdatePackageAsync(PackageId,package);
             Notify.Success("La mise à jour s'est déroulée avec succès", "SUCCESS");
             package = new Package();
-            Navigation.NavigateTo("/admin/package/view",true); // Redirection après succès
+            Navigation.NavigateTo("/admin/package/view",true); 
         }
         catch (Exception ex)
         {

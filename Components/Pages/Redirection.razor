@@ -28,7 +28,7 @@ protected override async Task OnInitializedAsync()
     {
         if (firstRender)
         {
-            _locationChangedHandler = Navigation.RegisterLocationChangingHandler(OnLocationChanging);
+            //_locationChangedHandler = Navigation.RegisterLocationChangingHandler(OnLocationChanging);
             try
             {
                 var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
@@ -79,24 +79,24 @@ protected override async Task OnInitializedAsync()
 
         }
     }
-    private ValueTask OnLocationChanging(LocationChangingContext context)
-    {
-        var newUrl = context.TargetLocation;
-            if(newUrl==Url)
-            {
-                Console.WriteLine($"Location changed to {Url} to {newUrl}");
-                context.PreventNavigation();
-            }
-            if(newUrl=="http://localhost:5213/")
-            {
-                Navigation.NavigateTo("/logout", true);
-            }
-        return ValueTask.CompletedTask;
-    }
-      public void Dispose()
-    {
-        _locationChangedHandler?.Dispose();
-    }
+//    private ValueTask OnLocationChanging(LocationChangingContext context)
+//    {
+//        var newUrl = context.TargetLocation;
+//            if(newUrl==Url)
+//            {
+//                Console.WriteLine($"Location changed to {Url} to {newUrl}");
+//            context.PreventNavigation();
+//            }
+//            if(newUrl=="http://localhost:5213/")
+//            {
+//                Navigation.NavigateTo("/logout", true);
+//            }
+//        return ValueTask.CompletedTask;
+//    }
+//      public void Dispose()
+//    {
+//        _locationChangedHandler?.Dispose();
+//    }
     public async ValueTask DisposeAsync()
 {
     if (AuthenticationStateProvider != null)
