@@ -51,7 +51,6 @@
         try
             {
                 await AS.RegisterAdminAsync(admin);
-                Console.WriteLine($"Registering password for admin:{admin.Password}");
                 Notify.Success("L'enregistrement s'est déroulé avec succès", "SUCCESS");
                 admin = new Admin();
             }
