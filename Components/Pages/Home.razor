@@ -34,7 +34,7 @@
     </div>
     <div>
         <InputText @bind-Value="user.Password" class="password-input" type="@(showPassword ? "text" : "password")" placeholder="Password" />
-                <button type="button" @onclick="TogglePasswordVisibility" class="password-toggle-btn">
+                <button type="button" style="margin-right:2px;margin-top:-75px;" @onclick="TogglePasswordVisibility" class="password-toggle-btn">
             <i class="bi @(showPassword ? "bi-eye-slash" : "bi-eye")"></i>
         </button>
     </div>
@@ -63,6 +63,12 @@
     [SupplyParameterFromForm]
     private User user { get; set; } = new User();
     private List<string> errorMessages = new List<string>();
+            private bool showPassword = false;
+
+    private void TogglePasswordVisibility()
+    {
+        showPassword = !showPassword;
+    }
 
     private async Task HandleRegistration()
     {
