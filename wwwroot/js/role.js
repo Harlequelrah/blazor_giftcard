@@ -36,7 +36,13 @@ $(document).ready(function () {
 
         $("#BudgetSubscriber").text(BudgetSubscriber);
     };
-    window.hello = function (Nom) {
-        alert("Hello!" + Nom);
-    };
+    window.ChangingPasswordVisibility = function (state) {
+        var element = document.getElementById("reset-password");
+        if (state) {
+            element.style.display = 'block';
+        }
+        else {
+            element.style.display = 'none';
+        }
+    }
 });

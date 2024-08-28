@@ -14,6 +14,7 @@
 @code {
     [Parameter]
     public  string Url {get; set;}
+    private bool isLoggedIn = false;
 
     private IDisposable _locationChangedHandler;
 
@@ -52,6 +53,7 @@ protected override async Task OnInitializedAsync()
                 }
                 if (user.Identity.IsAuthenticated)
                 {
+                isLoggedIn=true;
                     Navigation.NavigateTo("/"+Url);
                 }
                 else
@@ -68,10 +70,11 @@ protected override async Task OnInitializedAsync()
             try{
                 await JS.InvokeVoidAsync("updateUserState", true, UserContext.Username);
                 await JS.InvokeVoidAsync("manageVisibility", UserContext.Role);
+                //await JS.InvokeVoidAsync("changingPasswordVisibility",isLoggedIn);
             }
             catch (Exception ex)
             {
-                Notify.Error("Error retrieving packages", "error");
+                Notify.Error("Erreur lors de l'initialisation du profil", "error");
                 Console.WriteLine($"Exception lors de l'initialisation du profil : {ex}");
             }
 
