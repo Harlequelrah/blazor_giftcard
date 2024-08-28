@@ -50,7 +50,9 @@
     {
         try
             {
+                Notify.Info("L'enregistrement est en cours...");
                 await AS.RegisterAdminAsync(admin);
+                Console.WriteLine($"password: {admin.Password}");
                 Notify.Success("L'enregistrement s'est déroulé avec succès", "SUCCESS");
                 admin = new Admin();
             }
