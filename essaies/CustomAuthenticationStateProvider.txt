@@ -138,7 +138,7 @@ namespace blazor_giftcard.Services
         {
             var refreshRequest = new { }; // Pas besoin de fournir le refresh token depuis le client
 
-            var refreshTokenResponse = await _httpClient.PostAsJsonAsync("http://localhost:5107/api/User/refresh-token", refreshRequest);
+            var refreshTokenResponse = await _httpClient.PostAsJsonAsync("http://localhost:7168/api/User/refresh-token", refreshRequest);
 
             if (refreshTokenResponse.IsSuccessStatusCode)
             {
@@ -154,7 +154,7 @@ namespace blazor_giftcard.Services
         }
         private async Task<string> GetRefreshTokenFromServer()
         {
-            var response = await _httpClient.GetAsync("http://localhost:5107/api/User/get-refresh-token");
+            var response = await _httpClient.GetAsync("http://localhost:7168/api/User/get-refresh-token");
 
             if (response.IsSuccessStatusCode)
             {

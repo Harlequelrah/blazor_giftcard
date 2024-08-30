@@ -329,14 +329,14 @@ namespace blazor_giftcard.Services
 
         private async Task<string> GetRefreshTokenFromServer()
         {
-            var response = await _httpClient.GetStringAsync("http://localhost:5107/api/User/get-refresh-token");
+            var response = await _httpClient.GetStringAsync("http://localhost:7168/api/User/get-refresh-token");
             return response;
         }
 
         public async Task<bool> TryRefreshTokenAsync()
         {
             var refreshRequest = new { RefreshToken = await GetRefreshTokenFromServer() };
-            var refreshTokenResponse = await _httpClient.PostAsJsonAsync("http://localhost:5107/api/User/refresh-token", refreshRequest);
+            var refreshTokenResponse = await _httpClient.PostAsJsonAsync("http://localhost:7168/api/User/refresh-token", refreshRequest);
 
             if (refreshTokenResponse.IsSuccessStatusCode)
             {

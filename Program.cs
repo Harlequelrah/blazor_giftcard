@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.AspNetCore.HttpsPolicy;
 using System.Net.Http;
 using blazor_giftcard;
 using blazor_giftcard.Services;
@@ -18,12 +19,12 @@ builder.Services.AddTransient<JwtAuthorizationHandler>();
 
 builder.Services.AddHttpClient("authClientAPI", client =>
 {
-    client.BaseAddress = new Uri("http://localhost:5107/api/");
+    client.BaseAddress = new Uri("https://localhost:7168/api/");
 }).AddHttpMessageHandler<JwtAuthorizationHandler>();
 
 builder.Services.AddHttpClient("noauthClientAPI", client =>
 {
-    client.BaseAddress = new Uri("http://localhost:5107/api/");
+    client.BaseAddress = new Uri("https://localhost:7168/api/");
 });
 
 builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("authClientAPI"));
