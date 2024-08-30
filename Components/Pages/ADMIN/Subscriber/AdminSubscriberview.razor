@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="ListView.css" />
 </head>
 <PageTitle>Subscribers</PageTitle>
-<h3>Liste des souscripteurs</h3> 
+<h3>Liste des souscripteurs</h3>
 <div class="container">
     @if (Subscribers == null)
     {
@@ -90,7 +90,7 @@
     {
         if (firstRender)
         {
-            await Task.Delay(100);
+            await Task.Delay(50);
             await LoadSubscribers();
             StateHasChanged();
         }

@@ -36,7 +36,7 @@ $(document).ready(function () {
 
         $("#BudgetSubscriber").text(BudgetSubscriber);
     };
-    window.ChangingPasswordVisibility = function (state) {
+    window.changingPasswordVisibility = function (state) {
         var element = document.getElementById("reset-password");
         if (state) {
             element.style.display = 'block';

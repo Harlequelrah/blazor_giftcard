@@ -70,7 +70,7 @@ protected override async Task OnInitializedAsync()
             try{
                 await JS.InvokeVoidAsync("updateUserState", true, UserContext.Username);
                 await JS.InvokeVoidAsync("manageVisibility", UserContext.Role);
-                //await JS.InvokeVoidAsync("changingPasswordVisibility",isLoggedIn);
+                await JS.InvokeVoidAsync("changingPasswordVisibility",isLoggedIn);
             }
             catch (Exception ex)
             {

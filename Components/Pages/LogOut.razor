@@ -18,6 +18,7 @@
             UserContext.Role     ="";
             UserContextService.Token= "";
             await JS.InvokeVoidAsync("setSubscriber","","");
+            await JS.InvokeVoidAsync("changingPasswordVisibility",false);
             await AuthenticationStateProvider.Logout();
             Notify.Info("Vous êtes maintenant déconnecté","Information");
             await Task.Delay(200);
