@@ -10,6 +10,7 @@ using blazor_giftcard;
 using blazor_giftcard.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.WebHost.UseUrls("http://localhost:5213","https://localhost:7106");
 builder.Services.AddSingleton(TimeProvider.System);
 // Ajouter les services au conteneur.
 builder.Services.AddRazorComponents()
