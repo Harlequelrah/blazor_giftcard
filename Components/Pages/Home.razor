@@ -74,11 +74,11 @@
     {
         errorMessages.Clear(); // Clear previous error messages
         Notify.Info("L'enregistrement est en cours,Veuillez patienter quelques instants","Information");
-        var response = await Http.PostAsJsonAsync("http://localhost:7168/api/User/register/subscriber", user);
+        var response = await Http.PostAsJsonAsync("https://localhost:7168/api/User/register/subscriber", user);
         if (response.IsSuccessStatusCode)
         {
             Notify.Success("Votre enregistrement s'est déroulé avec succès");
-            await Task.Delay(50);
+            await Task.Delay(150);
             Navigation.NavigateTo("/login");
         }
         else

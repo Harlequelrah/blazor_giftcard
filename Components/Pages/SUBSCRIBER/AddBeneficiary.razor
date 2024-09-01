@@ -88,7 +88,7 @@ private async Task ShowConfirmModal()
             {
                 Notify.Info("L'enregistrement est en cours .Veuillez patienter quelques instants.","Information");
                 await SS.RegisterBeneficiaryAsync(UserContext.Subscriber.Id, Montant, beneficiary);
-                Notify.Success("L'enregistrement s'est déroulé avec succès", "SUCCESS");
+                
                 beneficiary = new BeneficiaryDto();
                 UserContext.Subscriber = await UserContext.GetSubscriberAsync(UserContext.Subscriber.IdUser);
                 if (UserContext.Subscriber.SubscriberWallet != null)
@@ -99,7 +99,7 @@ private async Task ShowConfirmModal()
             catch (Exception ex)
             {
                 Notify.Error("Erreur lors de l'enregistrement du bénéficiaire", "ERROR");
-                Console.WriteLine($"Error loading Subscriptions: {ex.Message}");
+                Console.WriteLine($"Erreur lors de l'enregistrement du bénéficiaire: {ex.Message}");
             }
 
     }

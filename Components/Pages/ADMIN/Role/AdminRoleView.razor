@@ -18,13 +18,15 @@
 <div class="container">
     @if (Roles == null)
     {
-        <div class="drop col-md-3">
+        <div class="drop col-md-3" style="height:100px;">
             <p>Loading...</p>
         </div>
     }
     else if (Roles.Count == 0)
     {
+    <div class="drop col-md-3" style="height:100px;">
         <p>No roles available.</p>
+        </div>
     }
     else
     {

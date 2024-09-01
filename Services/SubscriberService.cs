@@ -18,19 +18,21 @@ namespace blazor_giftcard.Services
         private readonly Lazy<HttpClient> _httpClient;
         private readonly HttpClient _noauthClient;
         private readonly HttpClient _authClient;
+        private readonly ToastrService _toastrService;
 
         private readonly CustomAuthenticationStateProvider _customAuthenticationStateProvider;
 
         private readonly ILogger<SubscriberService> _logger;
 
 
-        public SubscriberService(IHttpClientFactory httpClientFactory, ILogger<SubscriberService> logger, CustomAuthenticationStateProvider customAuthenticationStateProvider)
+        public SubscriberService(IHttpClientFactory httpClientFactory, ILogger<SubscriberService> logger, CustomAuthenticationStateProvider customAuthenticationStateProvider,ToastrService toastrService)
         {
             _httpClient = new Lazy<HttpClient>(() => httpClientFactory.CreateClient("authClientAPI"));
             _noauthClient = httpClientFactory.CreateClient("noauthClientAPI") ?? throw new ArgumentNullException(nameof(httpClientFactory));
             _logger = logger;
             _authClient = _httpClient.Value;
             _customAuthenticationStateProvider = customAuthenticationStateProvider;
+            _toastrService = toastrService;
 
         }
         public async Task<List<Package>> GetPackagesAsync()
@@ -64,8 +66,9 @@ namespace blazor_giftcard.Services
 
 
 
-        public async Task<Beneficiary> RegisterBeneficiaryAsync(int idsubscriber, double montant , BeneficiaryDto beneficiaryDto)
+        public async Task<Beneficiary> RegisterBeneficiaryAsync(int idsubscriber, double montant, BeneficiaryDto beneficiaryDto)
         {
+
             try
             {
                 _logger.LogInformation($"Registering beneficiary for subscriber ID {idsubscriber}.");
@@ -73,11 +76,22 @@ namespace blazor_giftcard.Services
                 response.EnsureSuccessStatusCode();
                 var registeredBeneficiary = await response.Content.ReadFromJsonAsync<Beneficiary>();
                 _logger.LogInformation($"Successfully registered beneficiary for subscriber ID {idsubscriber}.");
+                _toastrService.Success("L'enregistrement s'est déroulé avec succès", "SUCCESS");
                 return registeredBeneficiary;
             }
-            catch (Exception ex)
+            catch (HttpRequestException ex )
             {
                 _logger.LogError($"Error registering beneficiary for subscriber ID {idsubscriber}: {ex.Message}");
+                if (ex.Data.Contains("ResponseMessage"))
+                {
+                    var response = ex.Data["ResponseMessage"] as HttpResponseMessage;
+                    if (response != null)
+                    {
+                        string errorContent = await response.Content.ReadAsStringAsync();
+                        _toastrService.Error($"Erreur lors de l'enregistrement du beneficiaire : {errorContent}");
+                        Console.WriteLine("Contenu de l'erreur : " + errorContent);
+                    }
+                }
                 return null;
             }
         }

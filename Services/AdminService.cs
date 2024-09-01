@@ -410,6 +410,31 @@ namespace blazor_giftcard.Services
                 return new List<Subscription>();
             }
         }
+        public async Task<List<Subscription>> GetSubscriptionsAsync()
+        {
+            try
+            {
+                _logger.LogInformation($"Getting subscription .");
+                var response = await _authClient.GetStringAsync($"Subscription/FormatedSubscriptions");
+                using (var document = JsonDocument.Parse(response))
+                {
+                    var root = document.RootElement;
+                    var subscriptionsElement = root.GetProperty("$values");
+                    var options = new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    };
+                    var subscriptions = JsonSerializer.Deserialize<List<Subscription>>(subscriptionsElement.GetRawText(), options);
+                    _logger.LogInformation("Successfully retrieved subscription.");
+                    return subscriptions;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error retrieving subscriptions : {ex.Message}");
+                return new List<Subscription>();
+            }
+        }
         public async Task<List<MerchantHistory>> GetMerchantHistoriesAsync(int idMerchant)
         {
             try
