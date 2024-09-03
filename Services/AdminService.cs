@@ -216,7 +216,7 @@ namespace blazor_giftcard.Services
             catch (Exception ex)
             {
                 _logger.LogError($"Error retrieving Subscribers: {ex.Message}");
-                return new List<Subscriber>(); // Retourne une liste vide en cas d'erreur
+                return new List<Subscriber>();
             }
         }
         public async Task<List<Beneficiary>> GetBeneficiariesAsync()
@@ -299,7 +299,7 @@ namespace blazor_giftcard.Services
 
 
 
-        // Get a role by ID
+
         public async Task<Role> GetRoleByIdAsync(int id)
         {
             try
@@ -316,7 +316,7 @@ namespace blazor_giftcard.Services
             }
         }
 
-        // Create a new role
+
         public async Task<Role> PostRoleAsync(Role role)
         {
             try
@@ -368,7 +368,7 @@ namespace blazor_giftcard.Services
             }
         }
 
-        // Delete a role by ID
+        
         public async Task<bool> DeleteRoleAsync(int id)
         {
             try

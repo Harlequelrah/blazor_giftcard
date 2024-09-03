@@ -22,7 +22,7 @@ namespace blazor_giftcard.Services
     public class ErrorResponseModel
     {
         public string ErrorMessage { get; set; }
-        // Ajoute d'autres propriétés si nécessaire
+
     }
 
     public class CustomAuthenticationStateProvider : AuthenticationStateProvider, IAsyncDisposable
@@ -135,10 +135,10 @@ namespace blazor_giftcard.Services
                 {
                     var responseContent = await response.Content.ReadAsStringAsync();
 
-                    // Journaliser le code de statut et le contenu de la réponse
+
                     _logger.LogWarning("Login failed with status code: {StatusCode}. Response content: {Content}", response.StatusCode, responseContent);
 
-                    // Dé-sérialiser le contenu JSON en un objet d'erreur
+
                     try
                     {
                         var errorDetails = JsonSerializer.Deserialize<ErrorResponseModel>(responseContent);

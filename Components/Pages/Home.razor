@@ -72,7 +72,7 @@
 
     private async Task HandleRegistration()
     {
-        errorMessages.Clear(); // Clear previous error messages
+        errorMessages.Clear();
         Notify.Info("L'enregistrement est en cours,Veuillez patienter quelques instants","Information");
         var response = await Http.PostAsJsonAsync("https://localhost:7168/api/User/register/subscriber", user);
         if (response.IsSuccessStatusCode)
@@ -91,7 +91,7 @@
                     foreach (var errorMessage in error.Value)
                     {
                         Notify.Error(errorMessage) ;
-                        errorMessages.Add(errorMessage); // Add error messages to the list
+                        errorMessages.Add(errorMessage);
                     }
                 }
             }

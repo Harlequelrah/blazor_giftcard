@@ -12,7 +12,6 @@ using blazor_giftcard.Services;
 var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.UseUrls("http://localhost:5213","https://localhost:7106");
 builder.Services.AddSingleton(TimeProvider.System);
-// Ajouter les services au conteneur.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
@@ -72,7 +71,7 @@ builder.Services.AddServerSideBlazor();
 
 var app = builder.Build();
 
-// Configurer le pipeline de traitement des requêtes HTTP.
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");

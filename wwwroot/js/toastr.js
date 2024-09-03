@@ -26,25 +26,25 @@ $(document).ready(function() {
 
     toastr.error = function(message, title, options) {
         options = options || {};
-        options.iconClass = 'toast alert-danger'; // Bootstrap class for error
+        options.iconClass = 'toast alert-danger';
         return originalToastr.error.call(this, message, title, options);
     };
 
     toastr.success = function(message, title, options) {
         options = options || {};
-        options.iconClass = 'toast alert-success'; // Bootstrap class for success
+        options.iconClass = 'toast alert-success';
         return originalToastr.success.call(this, message, title, options);
     };
 
     toastr.warning = function(message, title, options) {
         options = options || {};
-        options.iconClass = 'toast alert-warning'; // Bootstrap class for warning
+        options.iconClass = 'toast alert-warning';
         return originalToastr.warning.call(this, message, title, options);
     };
 
     toastr.info = function(message, title, options) {
         options = options || {};
-        options.iconClass = 'toast alert-info'; // Bootstrap class for info
+        options.iconClass = 'toast alert-info';
         return originalToastr.info.call(this, message, title, options);
     };
 

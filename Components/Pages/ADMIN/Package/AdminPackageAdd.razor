@@ -68,7 +68,7 @@
             await AS.RegisterPackageAsync(package);
             Notify.Success("L'enregistrement s'est déroulé avec succès", "SUCCESS");
             package = new PackageDto();
-            Navigation.NavigateTo("/admin/package/view"); // Redirection après succès
+            Navigation.NavigateTo("/admin/package/view");
         }
         catch (Exception ex)
         {

@@ -58,7 +58,7 @@ namespace blazor_giftcard.Services
             catch (Exception ex)
             {
                 _logger.LogError($"Error retrieving Packages: {ex.Message}");
-                return new List<Package>(); // Retourne une liste vide en cas d'erreur
+                return new List<Package>();
             }
 
 
@@ -78,10 +78,15 @@ namespace blazor_giftcard.Services
                 _logger.LogInformation($"Successfully registered beneficiary for subscriber ID {idsubscriber}.");
                 _toastrService.Success("L'enregistrement s'est déroulé avec succès", "SUCCESS");
                 var responseContent = await response.Content.ReadAsStringAsync();
-                var apiResponse =await response.Content.ReadFromJsonAsync<RegisterBeneficiaryApiResponse>();
+                var apiResponse = await response.Content.ReadFromJsonAsync<RegisterBeneficiaryApiResponse>();
                 if (!string.IsNullOrEmpty(apiResponse?.Message))
                 {
                     _logger.LogInformation($"Message: {apiResponse.Message}");
+                    _toastrService.Info(apiResponse.Message, "INFORMATION");
+                }
+                if (apiResponse.Emailresponse)
+                {
+                    _logger.LogInformation("Un email contenant le code QR a bien été envoyé au bénéficiaire");
                     _toastrService.Info(apiResponse.Message, "INFORMATION");
                 }
                 return true;
@@ -92,7 +97,7 @@ namespace blazor_giftcard.Services
                 if (ex is HttpRequestException httpEx && httpEx.StatusCode.HasValue)
                 {
                     var statusCode = httpEx.StatusCode.Value;
-                    var errorContent = await response.Content.ReadAsStringAsync(); // Récupérer le contenu de la réponse
+                    var errorContent = await response.Content.ReadAsStringAsync();
 
                     _logger.LogError($"HTTP Status Code: {statusCode}, Content: {errorContent}");
 
@@ -211,8 +216,8 @@ namespace blazor_giftcard.Services
     }
     public class RegisterBeneficiaryApiResponse
     {
-        public string Token { get; set; }
-        public string Message { get; set; }
+        public bool  Emailresponse { get; set; } = false;
+        public string? Message { get; set; }
     }
 
 }
