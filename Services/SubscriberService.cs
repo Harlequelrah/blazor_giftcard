@@ -66,7 +66,7 @@ namespace blazor_giftcard.Services
 
 
 
-        public async Task<Beneficiary> RegisterBeneficiaryAsync(int idsubscriber, double montant, BeneficiaryDto beneficiaryDto)
+        public async Task<bool> RegisterBeneficiaryAsync(int idsubscriber, double montant, BeneficiaryDto beneficiaryDto)
         {
             HttpResponseMessage response = null;
 
@@ -75,10 +75,16 @@ namespace blazor_giftcard.Services
                 _logger.LogInformation($"Registering beneficiary for subscriber ID {idsubscriber}.");
                 response = await _authClient.PostAsJsonAsync($"User/register/beneficiary/bysubscriber/{idsubscriber}/value/{montant}", beneficiaryDto);
                 response.EnsureSuccessStatusCode();
-                var registeredBeneficiary = await response.Content.ReadFromJsonAsync<Beneficiary>();
                 _logger.LogInformation($"Successfully registered beneficiary for subscriber ID {idsubscriber}.");
                 _toastrService.Success("L'enregistrement s'est déroulé avec succès", "SUCCESS");
-                return registeredBeneficiary;
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var apiResponse =await response.Content.ReadFromJsonAsync<RegisterBeneficiaryApiResponse>();
+                if (!string.IsNullOrEmpty(apiResponse?.Message))
+                {
+                    _logger.LogInformation($"Message: {apiResponse.Message}");
+                    _toastrService.Info(apiResponse.Message, "INFORMATION");
+                }
+                return true;
             }
             catch (HttpRequestException ex)
             {
@@ -92,12 +98,12 @@ namespace blazor_giftcard.Services
 
                     _toastrService.Error($"Erreur lors de l'enregistrement du beneficiaire : {errorContent}", "Erreur");
                 }
-                return null;
+                return false;
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Une erreur inattendue est survenue dans l'enregistrement du beneficiaire : " + ex.Message);
-                return null;
+                return false;
             }
         }
 
@@ -202,6 +208,11 @@ namespace blazor_giftcard.Services
                 return new List<SubscriberHistory>();
             }
         }
+    }
+    public class RegisterBeneficiaryApiResponse
+    {
+        public string Token { get; set; }
+        public string Message { get; set; }
     }
 
 }

@@ -33,7 +33,7 @@
     color: #856404; /* Texte jaune foncé */
 }
 
-.toast.alert-info { /* Informations */
+.toast.alert-info {
     background-color: #d1ecf1; /* Fond bleu pâle */
     color: #0c5460; /* Texte bleu foncé */
 }
