@@ -15,7 +15,7 @@
 <PageTitle>Beneficiaries</PageTitle>
 <h3>Liste des Beneficiaires</h3>
 <div class="listview-container">
-    @if (Beneficiaries == null)
+    @if (Beneficiaries == null  )
     {
         <div class="drop col-md-3">
         <p>Loading...</p>
@@ -23,7 +23,9 @@
     }
     else if (Beneficiaries.Count == 0)
     {
+        <div class="drop col-md-3">
         <p>No beneficiaries available.</p>
+        </div>
     }
     else
     {
@@ -66,7 +68,7 @@
 
 @code
 {
-    private List<Beneficiary> Beneficiaries =new List<Beneficiary>();
+    private List<Beneficiary> Beneficiaries ;
     private List<View> beneficiaries =new List<View>();
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
