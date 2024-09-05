@@ -53,9 +53,9 @@
                             <td>@package.NomPackage</td>
                             <td>@package.Description</td>
                             <td> @(package.NbrJour.HasValue ? package.NbrJour.ToString()+" Jrs" : "Illimité")</td>
-                            <td>@package.Budget</td>
-                            <td>@package.Prix</td>
-                            <td>@package.MontantBase</td>
+                            <td>@package.Budget XOF</td>
+                            <td>@package.Prix XOF</td>
+                            <td>@package.MontantBase XOF</td>
                             <td>
                                 <a href="javascript:void(0)" @onclick="() => UpdatePackage(package.Id)">
                                     <i class="bi bi-pencil-square"></i>

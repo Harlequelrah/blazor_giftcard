@@ -37,9 +37,9 @@
                     <h2>@package.NomPackage</h2>
                     <p>@package.Description</p>
                     <p>Jours : @(package.NbrJour.HasValue ? package.NbrJour.ToString() : "Illimité")</p>
-                    <p>Budget : @package.Budget €</p>
-                    <p class="price">Prix : @package.Prix €</p>
-                    <p>Montant de Base : @package.MontantBase €</p>
+                    <p>Budget : @package.Budget XOF</p>
+                    <p class="price">Prix : @package.Prix XOF</p>
+                    <p>Montant de Base : @package.MontantBase XOF</p>
                     <button @onclick="() => ShowConfirmModal(package.Id)">Souscrire</button>
                 </div>
             }
